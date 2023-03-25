@@ -28,6 +28,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto findItemById(Long itemId) {
+        if(items.get(itemId) == null) {
+            validation.searchItem();
+        }
         return ItemMapper.toItemDto(items.get(itemId));
 
     }
@@ -41,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
                 itemAllOwnerId.put(i.getKey(), i.getValue());
             }
         }
+        log.info("Пользователь id: " + ownerId + " имеет: " + itemAllOwnerId.size() + " вещей");
         return itemAllOwnerId.values().stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
@@ -57,6 +61,7 @@ public class ItemServiceImpl implements ItemService {
                 foundItem.put(i.getKey(), i.getValue());
             }
         }
+        log.info("По запросу " + text + " Найдено: " + foundItem.size() + " вещей");
         return foundItem.values().stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
@@ -67,6 +72,7 @@ public class ItemServiceImpl implements ItemService {
         item.setOwner(userService.findUserById(idUser).getName());
         items.put(item.getId(), item);
         sequenceId += 1;
+        log.info("Пользователь id: " + idUser + " добавил вещь: " + item.getName());
         return ItemMapper.toItemDto(item);
     }
 

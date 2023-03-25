@@ -2,8 +2,8 @@ package ru.practicum.shareit.user.validation;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.InternalServerError;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ResourceAlreadyExists;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.User;
 
@@ -24,7 +24,7 @@ public class UserValidation {
 
     public void duplicateEmail() {
         log.warn("Валидация не пройдена: электронная почта уже существует");
-        throw new InternalServerError("электронная почта уже существует");
+        throw new ResourceAlreadyExists("электронная почта уже существует");
     }
 
     public void searchUser() {
