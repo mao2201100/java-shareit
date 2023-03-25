@@ -2,9 +2,9 @@ package ru.practicum.shareit.item.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.maper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.validation.ItemValidation;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
@@ -28,7 +28,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto findItemById(Long itemId) {
-        if(items.get(itemId) == null) {
+        if (items.get(itemId) == null) {
             validation.searchItem();
         }
         return ItemMapper.toItemDto(items.get(itemId));
@@ -52,12 +52,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDto> itemSearch(String text) {
         Map<Long, Item> foundItem = new HashMap<>();
         for (Map.Entry<Long, Item> i : items.entrySet()) {
-            if ((i.getValue().getName().toLowerCase().equals(text.toLowerCase()) ||
-                    i.getValue().getDescription().toLowerCase().equals(text.toLowerCase()) ||
-                    i.getValue().getName().toLowerCase().lastIndexOf(text.toLowerCase()) != -1 ||
-                    i.getValue().getDescription().toLowerCase().lastIndexOf(text.toLowerCase()) != -1)
-                    && i.getValue().getAvailable()
-                    && !text.isEmpty()) {
+            if ((i.getValue().getName().toLowerCase().equals(text.toLowerCase()) || i.getValue().getDescription().toLowerCase().equals(text.toLowerCase()) || i.getValue().getName().toLowerCase().lastIndexOf(text.toLowerCase()) != -1 || i.getValue().getDescription().toLowerCase().lastIndexOf(text.toLowerCase()) != -1) && i.getValue().getAvailable() && !text.isEmpty()) {
                 foundItem.put(i.getKey(), i.getValue());
             }
         }
