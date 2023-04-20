@@ -52,7 +52,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> bookingsUser(String state, long bookerId) {//Получение списка всех бронирований текущего пользователя
+    public Collection<Booking> bookingsUser(String state, long bookerId) {//Получение списка всех бронирований
+        // текущего пользователя
         userService.searchUser(bookerId);
         switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
             case ("CURRENT"): //Текущие бронирования пользователя
@@ -117,7 +118,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public Booking approvedOrRejected(Boolean approved, long ownerId, long bookingId) { //Подтверждение / отклонение бронирования
+    public Booking approvedOrRejected(Boolean approved, long ownerId, long bookingId) { //Подтверждение /
+        // отклонение бронирования
         Booking booking = bookingRepository.getById(bookingId);
         Long ownerId2 = itemRepository.getById(booking.getItem().getId()).getOwnerId();
         if (ownerId != ownerId2) {

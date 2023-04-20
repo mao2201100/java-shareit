@@ -33,8 +33,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemMapper mapper;
     private final CommentsMapper commentsMapper;
 
-    public ItemServiceImpl(ItemValidation validation, UserServiceImpl userService, ItemRepository itemRepository,
-                           CommentRepository commentRepository, BookingRepository bookingRepository, ItemMapper mapper, CommentsMapper commentsMapper) {
+    public ItemServiceImpl(ItemValidation validation, UserServiceImpl userService, ItemRepository itemRepository, CommentRepository commentRepository, BookingRepository bookingRepository, ItemMapper mapper, CommentsMapper commentsMapper) {
         this.validation = validation;
         this.userService = userService;
         this.itemRepository = itemRepository;
@@ -55,7 +54,10 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDto> itemAllOwnerId(Long ownerId) {///получение списка всех вещей конкретоного пользователя ++
-        return itemRepository.fetchItemByOwnerId(ownerId).stream().map((x) -> mapper.toItemDtoForAll(x, ownerId)).collect(Collectors.toList());
+        return itemRepository.fetchItemByOwnerId(ownerId)
+                .stream()
+                .map((x) -> mapper.toItemDtoForAll(x, ownerId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -110,6 +112,7 @@ public class ItemServiceImpl implements ItemService {
         if (comments.getText().equals("")) {
             validation.commenTextValidation();
         }
+
         List<Booking> bookings = bookingRepository.commentsCheck(authorId, itemId);
         if (bookings != null && bookings.size() > 0) {
             Comments comment = new Comments();
