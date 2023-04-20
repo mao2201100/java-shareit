@@ -52,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> bookingsUser(String state, long bookerId) {//Получение списка всех бронирований
+    public Collection<Booking> bookingsUser(String state, long bookerId) { //Получение списка всех бронирований
         // текущего пользователя
         userService.searchUser(bookerId);
         switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
@@ -70,10 +70,11 @@ public class BookingServiceImpl implements BookingService {
             default:
                 throw new UnsupportedStatus();
         }
+
     }
 
     @Override
-    public Collection<Booking> bookingsOwner(String state, long ownerId) {//Получение списка бронирований для всех
+    public Collection<Booking> bookingsOwner(String state, long ownerId) { //Получение списка бронирований для всех
         // вещей текущего пользователя. Этот запрос имеет смысл для владельца хотя бы одной вещи
         userService.searchUser(ownerId);
         switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
