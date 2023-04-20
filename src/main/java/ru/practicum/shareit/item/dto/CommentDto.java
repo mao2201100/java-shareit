@@ -10,8 +10,8 @@ import java.sql.Timestamp;
 public class CommentDto {
     private long id;
     private String text;
-    private long item_id;
-    private long author_id;
+    private long itemId;
+    private long authorId;
     private String authorName;
     private Timestamp created;
 }

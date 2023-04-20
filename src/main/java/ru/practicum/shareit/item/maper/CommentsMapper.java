@@ -15,7 +15,7 @@ public class CommentsMapper {
         CommentDto commentDto = new CommentDto();
         BeanUtils.copyProperties(comments, commentDto);
         commentDto.setAuthorName(comments.getAuthorId() != 0 ?
-                userRepository.findById(commentDto.getAuthor_id()).orElse(null).getName() : null);
+                userRepository.findById(commentDto.getAuthorId()).orElse(null).getName() : null);
         return commentDto;
     }
 
