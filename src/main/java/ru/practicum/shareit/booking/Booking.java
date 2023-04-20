@@ -29,12 +29,14 @@ public class Booking {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status; //статус бронирования. Может принимать одно из следующих значений:
+
     //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование
     //подтверждено владельцем, REJECTED — бронирование отклонено владельцем,
     //CANCELED — бронирование отменено создателем.
-    public enum Status{
+    public enum Status {
         WAITING, APPROVED, REJECTED, CANCELED;
     }
+
     @ManyToOne(fetch = FetchType.EAGER)
     private Item item;
 }

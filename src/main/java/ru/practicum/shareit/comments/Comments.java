@@ -17,9 +17,9 @@ public class Comments {
     @Column(name = "text")
     private String text;
     @Column(name = "item_id")
-    private long item_id;
+    private long itemId;
     @Column(name = "author_id")
-    private long author_id;
+    private long authorId;
     @Column(name = "created")
     private Timestamp created;
 }

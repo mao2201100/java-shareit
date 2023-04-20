@@ -114,8 +114,8 @@ public class ItemServiceImpl implements ItemService {
         if (bookings != null && bookings.size() > 0) {
             Comments comment = new Comments();
             comment.setText(comments.getText());
-            comment.setItem_id(itemId);
-            comment.setAuthor_id(authorId);
+            comment.setItemId(itemId);
+            comment.setAuthorId(authorId);
             comment.setCreated(Timestamp.from(Instant.now()));
             commentRepository.saveAndFlush(comment);
             return commentsMapper.toCommentsDto(commentRepository.findById(comment.getId()).get());

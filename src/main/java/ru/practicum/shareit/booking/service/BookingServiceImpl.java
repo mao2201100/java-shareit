@@ -92,7 +92,6 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-
     @Override
     public Booking create(BookingDto dto, Long bookerId) { //Добавление бронирования
         userService.searchUser(bookerId);
