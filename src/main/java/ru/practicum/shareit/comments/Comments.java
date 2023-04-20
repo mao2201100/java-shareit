@@ -1,0 +1,25 @@
+package ru.practicum.shareit.comments;
+
+import lombok.Data;
+import org.springframework.boot.context.properties.ConstructorBinding;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
+
+@Entity
+@Table(name = "comment")
+@Data
+@ConstructorBinding
+public class Comments {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "text")
+    private String text;
+    @Column(name = "item_id")
+    private long item_id;
+    @Column(name = "author_id")
+    private long author_id;
+    @Column(name = "created")
+    private Timestamp created;
+}

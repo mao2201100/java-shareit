@@ -1,6 +1,9 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingDtoOut;
+
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
@@ -14,12 +17,26 @@ public class ItemDto {
     private String owner; // владелец вещи
     private String request; // если вещь была создана по запросу другого пользователя, то в этом
     //поле будет храниться ссылка на соответствующий запрос
+    private Long ownerId;
+    private Long requestId;
 
-    public ItemDto(Long id, String name, String description, Boolean available, String request) {
+    private BookingDtoOut lastBooking;
+    private BookingDtoOut nextBooking;
+    private List<CommentDto> comments;
+
+    public ItemDto(Long id, String name, String description, Boolean available,
+                   String request, Long ownerId, Long requestId,
+                   BookingDtoOut lastBooking, BookingDtoOut nextBooking,
+                   List<CommentDto> comments) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
         this.request = request;
+        this.ownerId = ownerId;
+        this.requestId = requestId;
+        this.lastBooking = lastBooking;
+        this.nextBooking = nextBooking;
+        this.comments = comments;
     }
 }

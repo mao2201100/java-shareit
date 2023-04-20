@@ -48,5 +48,14 @@ public class ControllerAdvisor extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(UnsupportedStatus.class)
+    public ResponseEntity<Object> unsupportedStatus(UnsupportedStatus ex) {
+        Map<String, String> body = new LinkedHashMap<>();
+        body.put("timestamp", "Что-то пошло не так");
+        body.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
 }

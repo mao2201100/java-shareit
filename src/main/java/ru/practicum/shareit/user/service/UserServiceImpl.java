@@ -2,85 +2,78 @@ package ru.practicum.shareit.user.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.validation.UserValidation;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private final Map<Long, User> users = new HashMap<>();
-    private long sequenceId = 1;
+    private UserRepository userRepository;
+    private EntityManager entityManager;
     private UserValidation validation = new UserValidation();
 
-    @Override
-    public UserDto findUserById(Long id) { // получить юзера по id
-        if (!users.containsKey(id)) {
-            validation.searchUser();
-        }
-        return UserMapper.toUserDto(users.get(id));
+    public UserServiceImpl(EntityManager entityManager, UserRepository userRepository) {
+        this.entityManager = entityManager;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Collection<UserDto> getUsers() { // получить список всех пользователей
-        return users.values().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+    public UserDto findUserById(Long id) { // получить юзера по id    ++++
+        searchUser(id);
+        return UserMapper.toUserDto(userRepository.getById(id));
     }
 
     @Override
-    public UserDto create(User user) {  // добавление юзера
+    public Collection<UserDto> getUsers() { // получить список всех пользователей  +++
+        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public UserDto create(User user) {  // добавление юзера +++
         validation.create(user);
-        user.setId(sequenceId);
-        duplicateEmail(user);
-        user.setName(user.getName());
-        user.setEmail(user.getEmail());
-        users.put(user.getId(), user);
-        sequenceId += 1;
+        entityManager.persist(user); // добавление в базу юзара
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto update(Long userId, User user) {  // обновление пользователя
+    @Transactional
+    public UserDto update(Long userId, User user) {  // обновление пользователя  ++++
         searchUser(userId);
-        validation.create(users.get(userId));
+        User user1 = userRepository.getById(userId);
+        validation.create(userRepository.getById(userId));
         if (user.getName() != null) {
-            users.get(userId).setName(user.getName());
+            user1.setName(user.getName());
+            userRepository.save(user1);
             log.info("Изменен пользователь id:" + userId + " логин: " + user.getName());
         }
         if (user.getEmail() != null) {
-            duplicateEmail(user);
-            users.get(userId).setEmail(user.getEmail());
+            user1.setEmail(user.getEmail());
+            userRepository.save(user1);
             log.info("Изменен пользователь id:" + userId + " email: " + user.getEmail());
         }
-        return UserMapper.toUserDto(users.get(userId));
+
+        return UserMapper.toUserDto(userRepository.getById(userId));
     }
 
-    public void searchUser(Long userId) {  // поиск пользователя
-        if (users.get(userId) == null) {
-            validation.searchUser();
+    public void searchUser(Long userId) {  // поиск пользователя  +++
+        if (userRepository.findById(userId).isEmpty()) {
+            validation.userNotFound();
         }
     }
 
     @Override
-    public void deleteUser(long userId) { // удаление пользователя
-        if (!users.containsKey(userId)) {
-            validation.searchUser();
-        }
-        users.remove(userId);
-    }
-
-    public void duplicateEmail(User user) {  // проверка на существующий email при добавлении пользователя
-        for (Map.Entry<Long, User> i : users.entrySet()) {
-            if (i.getValue().getEmail().equals(user.getEmail()) && i.getValue().getId() != user.getId()) {
-                validation.duplicateEmail();
-                return;
-            }
-        }
+    public void deleteUser(long userId) { // удаление пользователя ++++
+        searchUser(userId);
+        userRepository.delete(userRepository.getReferenceById(userId));
     }
 
 }
