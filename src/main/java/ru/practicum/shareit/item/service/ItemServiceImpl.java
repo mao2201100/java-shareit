@@ -44,7 +44,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto findItemById(Long itemId, Long ownerId) {  //+
+    public ItemDto findItemById(Long itemId, Long ownerId) {
         if (itemRepository.findById(itemId).isEmpty()) {
             validation.searchItem();
         }
@@ -53,11 +53,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> itemAllOwnerId(Long ownerId) {///получение списка всех вещей конкретоного пользователя ++
+    public Collection<ItemDto> itemAllOwnerId(Long ownerId) { ///получение списка всех вещей пользователя
         return itemRepository.fetchItemByOwnerId(ownerId)
                 .stream()
                 .map((x) -> mapper.toItemDtoForAll(x, ownerId))
                 .collect(Collectors.toList());
+
     }
 
     @Override
