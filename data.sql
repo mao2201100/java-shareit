@@ -49,5 +49,5 @@ ALTER TABLE "comments" ADD FOREIGN KEY ("author_id") REFERENCES "users" ("id");
 
 ALTER TABLE "requests" ADD FOREIGN KEY ("requestor_id") REFERENCES "users" ("id");
 
-ALTER TABLE "requests" ADD FOREIGN KEY ("request_id") REFERENCES "users" ("id");
+ALTER TABLE "item" ADD FOREIGN KEY ("request_id") REFERENCES "requests" ("id");
 
