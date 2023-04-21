@@ -3,7 +3,7 @@ package ru.practicum.shareit;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-public class ShareItTest {
+public class ShareItTests {
 
     @SpringBootTest
     public class ContextLoadsTest {
@@ -14,7 +14,4 @@ public class ShareItTest {
         }
     }
 }
-
-
-
 
