@@ -30,7 +30,7 @@ public class ItemValidation {
         throw new NotFoundException("вещь не найдена");
     }
 
-    public void ownerItem(Long owner, Long ownerItem) {
+    public void ownerItem(long owner, long ownerItem) {
         if (owner != ownerItem) {
             log.warn("Валидация не пройдена: не правильно указан id хозяина вещи");
             throw new NotFoundException("не правильно указан id хозяина вещи");
