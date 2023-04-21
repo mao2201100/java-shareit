@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "comment")
+@Table(name = "comments")
 @Data
 @ConstructorBinding
 public class Comments {
