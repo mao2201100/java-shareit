@@ -2,11 +2,13 @@ package ru.practicum.shareit.item.maper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,8 +22,13 @@ public class ItemMapper {
     }
 
     public ItemDto toItemDto(Item item, Long ownerId) {
-        var lastBooking = bookingRepository.fetchLastBookerByItem(item.getId(), ownerId);
-        var nextBooking = bookingRepository.fetchNextBookerByItem(item.getId(), ownerId);
+        var lastBooking = bookingRepository.getFirstByItemIdAndStartBeforeOrderByStartDesc(
+                item.getId(), LocalDateTime.now());
+        Booking nextBooking = null;
+        if (lastBooking != null) {
+             nextBooking = bookingRepository.findTopByItemIdAndStartAfterAndEndAfterOrderByStartAsc(
+                    item.getId(), LocalDateTime.now(), lastBooking.getStart());
+        }
         return new ItemDto(
                 item.getId(),
                 item.getName(),
