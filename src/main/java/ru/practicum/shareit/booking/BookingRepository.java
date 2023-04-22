@@ -11,7 +11,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 //    // поиск всех записей по переданному bookerId с датой окончания (поле end ) раньше переданной.
 //    List<Booking> findByBookerId(Long bookerId);
 
-    @Query(value = "select * from booking book inner join item i on i.id = book.item_id where item_id = :itemId and i.owner_id = :ownerId and book.status = 'APPROVED' order by book.end_date desc limit 1", nativeQuery = true)
+    @Query(value = "select * from booking book inner join item i on i.id = book.item_id where item_id = :itemId and i.owner_id = :ownerId and book.status = 'APPROVED' order by book.start_date desc limit 1", nativeQuery = true)
     Booking fetchLastBookerByItem(long itemId, long ownerId);
 
     Booking getFirstByItemIdAndStartBeforeOrderByStartDesc(Long idItem, LocalDateTime now);

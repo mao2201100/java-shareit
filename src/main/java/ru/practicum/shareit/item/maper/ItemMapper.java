@@ -22,12 +22,10 @@ public class ItemMapper {
     }
 
     public ItemDto toItemDto(Item item, Long ownerId) {
-        var lastBooking = bookingRepository.getFirstByItemIdAndStartBeforeOrderByStartDesc(
-                item.getId(), LocalDateTime.now());
+        var lastBooking = bookingRepository.fetchLastBookerByItem(item.getId(), ownerId);
         Booking nextBooking = null;
         if (lastBooking != null) {
-             nextBooking = bookingRepository.findTopByItemIdAndStartAfterAndEndAfterOrderByStartAsc(
-                    item.getId(), LocalDateTime.now(), lastBooking.getStart());
+             nextBooking = bookingRepository.fetchNextBookerByItem(item.getId(), ownerId);
         }
         return new ItemDto(
                 item.getId(),
