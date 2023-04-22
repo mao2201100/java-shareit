@@ -11,7 +11,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 //    // поиск всех записей по переданному bookerId с датой окончания (поле end ) раньше переданной.
 //    List<Booking> findByBookerId(Long bookerId);
 
-    @Query(value = "select * from booking book where book.item_id = :itemId and exists((select bookSub1.id from booking bookSub1  inner join item iSub1 on iSub1.id = bookSub1.item_id where bookSub1.item_id = :itemId and iSub1.owner_id = :ownerId and bookSub1.status = 'APPROVED' order by bookSub1.start_date desc limit 1)) and book.booker_id not in (select bookSub2.booker_id from booking bookSub2  inner join item isub2 on isub2.id = bookSub2.item_id where bookSub2.item_id = :itemId and isub2.owner_id = :ownerId  and bookSub2.status = 'APPROVED' order by bookSub2.start_date desc limit 1) order by book.start_date desc limit 1", nativeQuery = true)
+    @Query(value = "select * from booking book where item_id = :itemId and (exists(select bookSub1.id from booking bookSub1  inner join item iSub1 on iSub1.id = bookSub1.item_id where bookSub1.status = 'APPROVED' and bookSub1.item_id = :itemId and iSub1.owner_id = :ownerId and bookSub1.status = 'APPROVED' and bookSub1.id = book.id order by bookSub1.start_date desc limit 1) or  exists(select bookSub.id from booking bookSub inner join item iSub on iSub.id = bookSub.item_id where bookSub.item_id = :itemId and iSub.owner_id = :ownerId and bookSub.status = 'APPROVED' and cast(bookSub.end_date as date) = cast(now() as date) and bookSub.id = book.id order by bookSub.start_date desc limit 1)) limit 1", nativeQuery = true)
     Booking fetchLastBookerByItem(long itemId,  long ownerId);
 
     Booking getFirstByItemIdAndStartBeforeOrderByStartDesc(Long idItem, LocalDateTime now);
