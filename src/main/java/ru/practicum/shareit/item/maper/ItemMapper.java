@@ -8,6 +8,9 @@ import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,10 +24,19 @@ public class ItemMapper {
     }
 
     public ItemDto toItemDto(Item item, Long ownerId) {
-        var lastBooking = bookingRepository.fetchLastBookerByItem(item.getId(), ownerId);
+        //var lastBooking = bookingRepository.fetchLastBookerByItem(item.getId(), ownerId);
+
+        List<Booking> bookings = bookingRepository.fetchLastBookerByItemForAll(item.getId(), ownerId);
+        LocalDateTime now = LocalDateTime.now();
+        var lastBooking = bookings
+                .stream()
+                .filter(b -> b.getEnd().isBefore(now) ^ (b.getStart().isBefore(now) && b.getEnd().isAfter(now)))
+                .filter(b -> b.getStatus().equals(Booking.Status.APPROVED))
+                .max(Comparator.comparing(Booking::getEnd)).orElse(null);
+
         Booking nextBooking = null;
         if (lastBooking != null) {
-             nextBooking = bookingRepository.fetchNextBookerByItem(item.getId(), ownerId);
+            nextBooking = bookingRepository.fetchNextBookerByItem(item.getId(), ownerId);
         }
         return new ItemDto(
                 item.getId(),
@@ -39,23 +51,6 @@ public class ItemMapper {
                 item.getComments() != null ?
                         item.getComments().stream().map(commentsMapper::toCommentsDto).collect(Collectors.toList()) : null
         );
-    }
-
-    public ItemDto toItemDtoForAll(Item item, Long ownerId) {
-        var lastBooking = bookingRepository.fetchLastBookerByItemForAll(item.getId(), ownerId);
-        var nextBooking = bookingRepository.fetchNextBookerByItemForAll(item.getId(), ownerId);
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getRequest() != null ? item.getRequest() : null,
-                item.getOwnerId(),
-                item.getRequestId(),
-                lastBooking != null ? bookingMapper.toBookingDtoOut(lastBooking) : null,
-                nextBooking != null ? bookingMapper.toBookingDtoOut(nextBooking) : null,
-                item.getComments() != null ?
-                        item.getComments().stream().map(commentsMapper::toCommentsDto).collect(Collectors.toList()) : null);
     }
 
     @Autowired

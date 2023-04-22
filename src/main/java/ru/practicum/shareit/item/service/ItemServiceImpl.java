@@ -56,7 +56,7 @@ public class ItemServiceImpl implements ItemService {
     public Collection<ItemDto> itemAllOwnerId(Long ownerId) { ///получение списка всех вещей пользователя
         return itemRepository.fetchItemByOwnerId(ownerId)
                 .stream()
-                .map((x) -> mapper.toItemDtoForAll(x, ownerId))
+                .map((x) -> mapper.toItemDto(x, ownerId))
                 .collect(Collectors.toList());
 
     }
