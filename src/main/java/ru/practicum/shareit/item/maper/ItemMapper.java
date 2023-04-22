@@ -24,8 +24,6 @@ public class ItemMapper {
     }
 
     public ItemDto toItemDto(Item item, Long ownerId) {
-        //var lastBooking = bookingRepository.fetchLastBookerByItem(item.getId(), ownerId);
-
         List<Booking> bookings = bookingRepository.fetchLastBookerByItemForAll(item.getId(), ownerId);
         LocalDateTime now = LocalDateTime.now();
         var lastBooking = bookings
