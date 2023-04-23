@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import ru.practicum.shareit.comments.Comments;
 
 import javax.persistence.*;
@@ -11,7 +13,8 @@ import java.util.List;
  */
 @Entity
 @Table(name = "item")
-@Data
+@Getter
+@Setter
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

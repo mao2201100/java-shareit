@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -29,7 +30,7 @@ public class ItemMapper {
         var lastBooking = bookings
                 .stream()
                 .filter(b -> b.getEnd().isBefore(now) ^ (b.getStart().isBefore(now) && b.getEnd().isAfter(now)))
-                .filter(b -> b.getStatus().equals(Booking.Status.APPROVED))
+                .filter(b -> b.getStatus().equals(BookingStatus.APPROVED))
                 .max(Comparator.comparing(Booking::getEnd)).orElse(null);
 
         Booking nextBooking = null;

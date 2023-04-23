@@ -1,6 +1,8 @@
 package ru.practicum.shareit.comments;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 import javax.persistence.*;
@@ -8,7 +10,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "comments")
-@Data
+@Getter
+@Setter
 @ConstructorBinding
 public class Comments {
     @Id

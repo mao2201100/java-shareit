@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.validation.BookingValidation;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -107,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = new Booking();
         BeanUtils.copyProperties(dto, booking);
         booking.setBooker(userRepository.findById(bookerId).orElseThrow());
-        booking.setStatus(Booking.Status.WAITING);
+        booking.setStatus(BookingStatus.WAITING);
         booking.setItem(itemRepository.findById(dto.getItemId()).orElseThrow());
         return save(booking);
     }
@@ -128,9 +129,9 @@ public class BookingServiceImpl implements BookingService {
         }
         if (booking.getStatus() != fetch(approved)) {
             if (approved) {
-                booking.setStatus(Booking.Status.APPROVED);
+                booking.setStatus(BookingStatus.APPROVED);
             } else {
-                booking.setStatus(Booking.Status.REJECTED);
+                booking.setStatus(BookingStatus.REJECTED);
             }
             return save(booking);
         } else {
@@ -139,11 +140,11 @@ public class BookingServiceImpl implements BookingService {
         return null;
     }
 
-    private Booking.Status fetch(boolean state) {
+    private BookingStatus fetch(boolean state) {
         if (state) {
-            return Booking.Status.APPROVED;
+            return BookingStatus.APPROVED;
         } else {
-            return Booking.Status.REJECTED;
+            return BookingStatus.REJECTED;
         }
     }
 

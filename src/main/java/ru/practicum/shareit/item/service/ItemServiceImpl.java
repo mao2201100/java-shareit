@@ -1,5 +1,7 @@
 package ru.practicum.shareit.item.service;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private ItemRepository itemRepository;
     private CommentRepository commentRepository;
@@ -32,16 +35,6 @@ public class ItemServiceImpl implements ItemService {
     private final UserServiceImpl userService;
     private final ItemMapper mapper;
     private final CommentsMapper commentsMapper;
-
-    public ItemServiceImpl(ItemValidation validation, UserServiceImpl userService, ItemRepository itemRepository, CommentRepository commentRepository, BookingRepository bookingRepository, ItemMapper mapper, CommentsMapper commentsMapper) {
-        this.validation = validation;
-        this.userService = userService;
-        this.itemRepository = itemRepository;
-        this.commentRepository = commentRepository;
-        this.bookingRepository = bookingRepository;
-        this.mapper = mapper;
-        this.commentsMapper = commentsMapper;
-    }
 
     @Override
     public ItemDto findItemById(Long itemId, Long ownerId) {

@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
@@ -13,7 +15,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "booking")
-@Data
+@Getter
+@Setter
 @ConstructorBinding
 public class Booking {
     @Id
@@ -28,15 +31,12 @@ public class Booking {
     private User booker; // пользователь, который осуществляет бронирование;
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private Status status; //статус бронирования. Может принимать одно из следующих значений:
+    private BookingStatus status; //статус бронирования. Может принимать одно из следующих значений:
 
     //WAITING — новое бронирование, ожидает одобрения, APPROVED — бронирование
     //подтверждено владельцем, REJECTED — бронирование отклонено владельцем,
     //CANCELED — бронирование отменено создателем.
-    public enum Status {
-        WAITING, APPROVED, REJECTED, CANCELED;
-    }
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private Item item;
 }

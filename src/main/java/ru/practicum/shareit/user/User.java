@@ -1,6 +1,8 @@
 package ru.practicum.shareit.user;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 import javax.persistence.*;
@@ -11,7 +13,8 @@ import javax.validation.constraints.Email;
  */
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @ConstructorBinding
 public class User {
     @Id
