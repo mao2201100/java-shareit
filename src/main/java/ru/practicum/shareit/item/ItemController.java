@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comments.Comments;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
@@ -22,9 +24,10 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto findById(@PathVariable("itemId") Long itemId) { // получить вещь по id
+    public ItemDto findById(@PathVariable("itemId") Long itemId,
+                            @RequestHeader("X-Sharer-User-Id") long ownerId) { // получить вещь по id
         log.info("Executing Get findById: " + itemId);
-        return itemService.findItemById(itemId);
+        return itemService.findItemById(itemId, ownerId);
     }
 
     @GetMapping
@@ -34,15 +37,25 @@ public class ItemController {
     }
 
     @GetMapping("search")
-    public Collection<ItemDto> itemSearch(@RequestParam String text) {  //получение списка всех вещей по параметру поиска.
+    public Collection<ItemDto> itemSearch(@RequestParam String text,
+                                          @RequestHeader("X-Sharer-User-Id") long ownerId) {  //получение списка всех вещей по параметру поиска.
         log.info("Executing Get itemSearch: " + text);
-        return itemService.itemSearch(text);
+        return itemService.itemSearch(text, ownerId);
     }
 
     @PostMapping
     public ItemDto create(@RequestBody Item item, @RequestHeader("X-Sharer-User-Id") long idUser) { // создать вещь
         log.info("Executing Post create");
         return itemService.create(item, idUser);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComments(@PathVariable("itemId") Long itemId, @RequestBody Comments comments,
+                                     @RequestHeader("X-Sharer-User-Id") long idUser) {
+        // добавить комментарий
+        log.info("Executing Comment create");
+
+        return itemService.createComments(comments, idUser, itemId);
     }
 
     @PatchMapping("/{itemId}")

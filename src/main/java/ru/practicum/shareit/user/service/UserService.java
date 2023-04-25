@@ -16,4 +16,6 @@ public interface UserService {
     UserDto update(Long userId, User user); // изменить пользователя
 
     void deleteUser(long userId); // удаление из друзей
+
+    void searchUser(Long userId); // проверка наличия пользователя
 }

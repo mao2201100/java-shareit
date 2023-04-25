@@ -3,11 +3,15 @@ package ru.practicum.shareit;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class ShareItTests {
+public class ShareItTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @SpringBootTest
+    public class ContextLoadsTest {
 
+        @Test
+        void contextLoads() {
+
+        }
+    }
 }
+

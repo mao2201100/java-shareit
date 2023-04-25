@@ -30,12 +30,26 @@ public class ItemValidation {
         throw new NotFoundException("вещь не найдена");
     }
 
-    public void ownerItem(String owner, String ownerItem) {
-        if (!(owner.equals(ownerItem))) {
+    public void ownerItem(long owner, long ownerItem) {
+        if (owner != ownerItem) {
             log.warn("Валидация не пройдена: не правильно указан id хозяина вещи");
             throw new NotFoundException("не правильно указан id хозяина вещи");
         }
+    }
 
+    public void checkItemAvailable() {
+        log.warn("Вещь недоступна для бронирования");
+        throw new ValidationException("Вещь недоступна для бронирования");
+    }
+
+    public void commentValidation() {
+        log.warn("Вы не можете написать отзыв, бронирование не закончено либо указан не правильный id вещи");
+        throw new ValidationException("Вы не можете написать отзыв, бронирование не закончено либо указан не правильный id вещи");
+    }
+
+    public void commenTextValidation() {
+        log.warn("Комментарий не может быть пустым");
+        throw new ValidationException("Комментарий не может быть пустым");
     }
 }
 
