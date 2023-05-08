@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class itemRequestServiceImpl implements ItemRequestService {
+public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final ItemRequestValidation itemRequestValidation;
     private final RequestRepository requestRepository;
