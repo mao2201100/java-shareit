@@ -8,9 +8,9 @@ import java.util.Collection;
 public interface BookingService {
     Booking bookingId(long bookingId, long ownerId);
 
-    Collection<Booking> bookingsUser(String state, long userId);
+    Collection<Booking> bookingsUser(String state, long userId, Long from, Long size);
 
-    Collection<Booking> bookingsOwner(String state, long userId);
+    Collection<Booking> bookingsOwner(String state, long userId, Long from, Long size);
 
     Booking create(BookingDto dto, Long bookerId);
 

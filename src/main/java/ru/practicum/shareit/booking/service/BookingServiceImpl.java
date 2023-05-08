@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
@@ -12,13 +14,13 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatus;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
-import ru.practicum.shareit.request.Request;
 import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class BookingServiceImpl implements BookingService {
@@ -53,46 +55,57 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> bookingsUser(String state, long bookerId) { //Получение списка всех бронирований
+    public Collection<Booking> bookingsUser(String state, long bookerId, Long from, Long size) { //Получение списка всех бронирований
         // текущего пользователя
-        userService.searchUser(bookerId);
-        switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
-            case ("CURRENT"): //Текущие бронирования пользователя
-                return bookingRepository.fetchBookingByStateCurrentByBookerId(bookerId);
-            case ("PAST"):// завершённые
-                return bookingRepository.fetchBookingByStatePastByBookerId(bookerId);
-            case ("FUTURE")://будущие
-                return bookingRepository.fetchBookingByStateFutureByBookerId(bookerId);
-            case ("WAITING")://ожидающие подтверждения
-            case ("REJECTED"): //отклоненные
-                return bookingRepository.fetchBookingByStatusByBookerId(bookerId, state);
-            case ("ALL"):
-                return bookingRepository.fetchBookingByBookerId(bookerId); // на случай если state пусто или All
-            default:
-                throw new UnsupportedStatus();
+        if (from == null && size == null) {
+            userService.searchUser(bookerId);
+            switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
+                case ("CURRENT"): //Текущие бронирования пользователя
+                    return bookingRepository.fetchBookingByStateCurrentByBookerId(bookerId);
+                case ("PAST"):// завершённые
+                    return bookingRepository.fetchBookingByStatePastByBookerId(bookerId);
+                case ("FUTURE")://будущие
+                    return bookingRepository.fetchBookingByStateFutureByBookerId(bookerId);
+                case ("WAITING")://ожидающие подтверждения
+                case ("REJECTED"): //отклоненные
+                    return bookingRepository.fetchBookingByStatusByBookerId(bookerId, state);
+                case ("ALL"):
+                    return bookingRepository.fetchBookingByBookerId(bookerId); // на случай если state пусто или All
+                default:
+                    throw new UnsupportedStatus();
+            }
         }
-
+        bookingValidation.bookingIdIsFirstAndSizeIndex(from, size);
+        Pageable pageable = PageRequest.of(Math.toIntExact(from - 2), Math.toIntExact(size));
+        List<Booking> bookingList = bookingRepository.fetchBookingByBookerIdPage(bookerId, pageable);
+        return bookingList;
     }
 
     @Override
-    public Collection<Booking> bookingsOwner(String state, long ownerId) { //Получение списка бронирований для всех
+    public Collection<Booking> bookingsOwner(String state, long ownerId, Long from, Long size) { //Получение списка бронирований для всех
         // вещей текущего пользователя. Этот запрос имеет смысл для владельца хотя бы одной вещи
         userService.searchUser(ownerId);
-        switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
-            case ("CURRENT"): //Текущие бронирования пользователя
-                return bookingRepository.fetchBookingByStateCurrentByOwnerId(ownerId);
-            case ("PAST"):// завершённые
-                return bookingRepository.fetchBookingByStatePastByOwnerId(ownerId);
-            case ("FUTURE")://будущие
-                return bookingRepository.fetchBookingByStateFutureByOwnerId(ownerId);
-            case ("WAITING")://ожидающие подтверждения
-            case ("REJECTED"): //отклоненные
-                return bookingRepository.fetchBookingByStatusByOwnerId(ownerId, state);
-            case ("ALL"):
-                return bookingRepository.fetchBookingOwnerId(ownerId); // на случай если state пусто или All
-            default:
-                throw new UnsupportedStatus();
+        if (from == null && size == null) {
+            switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
+                case ("CURRENT"): //Текущие бронирования пользователя
+                    return bookingRepository.fetchBookingByStateCurrentByOwnerId(ownerId);
+                case ("PAST"):// завершённые
+                    return bookingRepository.fetchBookingByStatePastByOwnerId(ownerId);
+                case ("FUTURE")://будущие
+                    return bookingRepository.fetchBookingByStateFutureByOwnerId(ownerId);
+                case ("WAITING")://ожидающие подтверждения
+                case ("REJECTED"): //отклоненные
+                    return bookingRepository.fetchBookingByStatusByOwnerId(ownerId, state);
+                case ("ALL"):
+                    return bookingRepository.fetchBookingOwnerId(ownerId); // на случай если state пусто или All
+                default:
+                    throw new UnsupportedStatus();
+            }
         }
+        bookingValidation.bookingIdIsFirstAndSizeIndex(from, size);
+        Pageable pageable = PageRequest.of(Math.toIntExact(from), Math.toIntExact(size));
+        List<Booking> bookingList = bookingRepository.fetchBookingOwnerIdPage(ownerId, pageable);
+        return bookingList;
     }
 
     @Override
@@ -102,9 +115,10 @@ public class BookingServiceImpl implements BookingService {
         itemService.checkItemAvailable(dto.getItemId());
         itemService.checkItemOwner(dto.getItemId(), bookerId);
         dateValidation(dto);
-        Request request = new Request();
-        request.setRequestorId(bookerId);
-        requestRepository.saveAndFlush(request);
+//        Request request = new Request();
+//        request.setRequestorId(bookerId);
+//        requestRepository.saveAndFlush(request);
+
         Booking booking = new Booking();
         BeanUtils.copyProperties(dto, booking);
         booking.setBooker(userRepository.findById(bookerId).orElseThrow());

@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import ru.practicum.shareit.comments.Comments;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @Table(name = "item")
 @Getter
 @Setter
+@ConstructorBinding
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +28,8 @@ public class Item {
     private Boolean available; // статус о том, доступна или нет вещь для аренды
     @Column(name = "owner")
     private String owner; // владелец вещи
-    @Column(name = "request")
-    private String request; // если вещь была создана по запросу другого пользователя, то в этом
+    @Column(name = "owner_id") // если вещь была создана по запросу другого пользователя, то в этом
     //поле будет храниться ссылка на соответствующий запрос
-    @Column(name = "owner_id")
     private long ownerId;
     @Column(name = "request_id")
     private long requestId;

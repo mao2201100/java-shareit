@@ -45,7 +45,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto create(@RequestBody Item item, @RequestHeader("X-Sharer-User-Id") long idUser) { // создать вещь
-        log.info("Executing Post create");
+        log.info("Executing Post createItemRequest");
         return itemService.create(item, idUser);
     }
 
@@ -53,7 +53,7 @@ public class ItemController {
     public CommentDto createComments(@PathVariable("itemId") Long itemId, @RequestBody Comments comments,
                                      @RequestHeader("X-Sharer-User-Id") long idUser) {
         // добавить комментарий
-        log.info("Executing Comment create");
+        log.info("Executing Comment createItemRequest");
 
         return itemService.createComments(comments, idUser, itemId);
     }

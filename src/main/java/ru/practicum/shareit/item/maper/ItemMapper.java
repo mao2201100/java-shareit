@@ -42,7 +42,6 @@ public class ItemMapper {
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
-                item.getRequest() != null ? item.getRequest() : null,
                 item.getOwnerId(),
                 item.getRequestId(),
                 lastBooking != null ? bookingMapper.toBookingDtoOut(lastBooking) : null,

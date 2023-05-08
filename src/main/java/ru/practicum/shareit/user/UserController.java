@@ -35,7 +35,7 @@ public class UserController {
 
     @PostMapping
     public UserDto create(@RequestBody User user) { // создать пользователя
-        log.info("Executing Post create user");
+        log.info("Executing Post createItemRequest user");
         return userService.create(user);
     }
 

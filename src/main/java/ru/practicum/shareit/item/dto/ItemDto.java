@@ -15,8 +15,6 @@ public class ItemDto {
     private String description; //  развёрнутое описание
     private Boolean available; // статус о том, доступна или нет вещь для аренды
     private String owner; // владелец вещи
-    private String request; // если вещь была создана по запросу другого пользователя, то в этом
-    //поле будет храниться ссылка на соответствующий запрос
     private Long ownerId;
     private Long requestId;
 
@@ -25,14 +23,13 @@ public class ItemDto {
     private List<CommentDto> comments;
 
     public ItemDto(Long id, String name, String description, Boolean available,
-                   String request, Long ownerId, Long requestId,
+                   Long ownerId, Long requestId,
                    BookingDtoOut lastBooking, BookingDtoOut nextBooking,
                    List<CommentDto> comments) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.available = available;
-        this.request = request;
         this.ownerId = ownerId;
         this.requestId = requestId;
         this.lastBooking = lastBooking;

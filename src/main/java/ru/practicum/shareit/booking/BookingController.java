@@ -23,7 +23,7 @@ public class BookingController {
     @PostMapping
     public Booking create(@RequestBody BookingDto booking, @RequestHeader("X-Sharer-User-Id") long bookerId) {
         // Добавление нового запроса на бронирование
-        log.info("Executing Comment create");
+        log.info("Executing Comment createItemRequest");
         return bookingService.create(booking, bookerId);
     }
 
@@ -35,19 +35,22 @@ public class BookingController {
         return bookingService.approvedOrRejected(approved, ownerId, bookingId);
     }
 
-
     @GetMapping("") //Получение списка всех бронирований текущего пользователя
     public Collection<Booking> bookingsUser(@RequestParam(name = "state", required = false, defaultValue = "ALL") String state,
+                                            @RequestParam(required = false) Long from,
+                                            @RequestParam(required = false) Long size,
                                             @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Executing Get bookingsUserId: " + userId);
-        return bookingService.bookingsUser(state, userId);
+        return bookingService.bookingsUser(state, userId, from, size);
     }
 
     @GetMapping("/owner") //Получение списка бронирований для всех вещей текущего пользователя
     public Collection<Booking> bookingsOwner(@RequestParam(required = false, defaultValue = "ALL") String state,
+                                             @RequestParam(required = false) Long from,
+                                             @RequestParam(required = false) Long size,
                                              @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Executing Get bookingsOwner: " + userId);
-        return bookingService.bookingsOwner(state, userId);
+        return bookingService.bookingsOwner(state, userId, from, size);
     }
 
     @GetMapping("/{bookingId}")
@@ -56,6 +59,4 @@ public class BookingController {
         log.info("Executing Get bookingId: " + bookingId);
         return bookingService.getBookingId(bookingId, userId);
     }
-
-
 }

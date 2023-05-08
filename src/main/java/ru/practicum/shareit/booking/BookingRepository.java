@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -33,13 +34,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "select * from booking book where book.status = :status and book.booker_id = :bookerId order by book.id asc", nativeQuery = true)
     List<Booking> fetchBookingByStatusByBookerId(Long bookerId, String status);
 
+
     @Query(value = "select * from booking book where book.booker_id = :bookerId order by book.id desc", nativeQuery = true)
     List<Booking> fetchBookingByBookerId(Long bookerId);// все бронирования текущего пользователя
 
+    @Query(value = "select * from booking book where book.booker_id = :bookerId order by book.id desc", nativeQuery = true)
+    List<Booking> fetchBookingByBookerIdPage(Long bookerId, Pageable pageable);// все бронирования текущего пользователя в постраничном варианте
 
     @Query(value = "select * from booking book inner join item it on it.id = book.item_id and it.owner_id = :ownerId where  book.end_date >= now() and book.start_date <= now() order by book.id asc", nativeQuery = true)
     List<Booking> fetchBookingByStateCurrentByOwnerId(Long ownerId);
-
 
     @Query(value = "select * from booking book inner join item it on it.id = book.item_id and it.owner_id = :ownerId where book.end_date < now() order by book.id desc", nativeQuery = true)
     List<Booking> fetchBookingByStatePastByOwnerId(Long ownerId);
@@ -52,5 +55,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query(value = "select * from booking book inner join item it on it.id = book.item_id and it.owner_id = :ownerId order by book.id desc", nativeQuery = true)
     List<Booking> fetchBookingOwnerId(Long ownerId);// все бронирования текущего пользователя
+
+    @Query(value = "select * from booking book inner join item it on it.id = book.item_id and it.owner_id = :ownerId order by book.id desc", nativeQuery = true)
+    List<Booking> fetchBookingOwnerIdPage(Long ownerId, Pageable pageable);// все бронирования текущего пользователя
 
 }
