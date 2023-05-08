@@ -43,7 +43,7 @@ public class itemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public Collection<ItemRequestDto> findAllItemRequestUsers(Long from, Long size, long userId) {
-        if(from == null && size == null){
+        if (from == null && size == null) {
             return requestRepository.findAll().stream().map(itemRequestMapper::toItemRequestDto).collect(Collectors.toList());
         }
         itemRequestValidation.itemRequestIdIsFirstAndSizeIndex(from, size);
@@ -58,7 +58,7 @@ public class itemRequestServiceImpl implements ItemRequestService {
         userService.searchUser(ownerId);
         return requestRepository.ownerRequest(ownerId).stream()
                 .map(itemRequestMapper::toItemRequestDto)
-                .peek(x-> {
+                .peek(x -> {
                     x.setItems(itemRepository.itemsForRequestId(ownerId));
                 })
                 .collect(Collectors.toList());
