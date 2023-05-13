@@ -6,6 +6,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.request.Request;
+
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 class ItemRequestValidationTest {
@@ -14,7 +15,6 @@ class ItemRequestValidationTest {
 
     @Test
     void itemRequest(Request mokRequest) {
-
 
     }
 
@@ -25,4 +25,5 @@ class ItemRequestValidationTest {
     @Test
     void itemRequestIdIsFirstAndSizeIndex() {
     }
+
 }
