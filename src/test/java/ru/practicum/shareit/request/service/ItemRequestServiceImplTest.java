@@ -78,7 +78,7 @@ class ItemRequestServiceImplTest {
     @Test
     void findAllItemRequestUsersAll() {
         user.setId(1);
-        itemRequestService.findAllItemRequestUsers(null, null,user.getId());
+        itemRequestService.findAllItemRequestUsers(null, null, user.getId());
         verify(mockRequestRepository, times(1)).findAll();
     }
 
