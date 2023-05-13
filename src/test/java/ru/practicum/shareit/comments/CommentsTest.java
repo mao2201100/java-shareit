@@ -2,8 +2,6 @@ package ru.practicum.shareit.comments;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class CommentsTest {
 
     @Test
