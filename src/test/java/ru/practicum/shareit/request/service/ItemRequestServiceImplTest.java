@@ -4,38 +4,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-import ru.practicum.shareit.booking.service.BookingService;
-import ru.practicum.shareit.booking.service.BookingServiceImpl;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.Request;
-import ru.practicum.shareit.request.RequestRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.maper.ItemRequestMapper;
-import ru.practicum.shareit.request.validation.ItemRequestValidation;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.mapper.UserMapper;
-import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.service.UserServiceImpl;
-import ru.practicum.shareit.user.validation.UserValidation;
 
-import javax.persistence.EntityManager;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
@@ -44,7 +27,7 @@ class ItemRequestServiceImplTest {
     @Autowired
     private ItemRequestService itemRequestServiceImpl;
 
-//    @MockBean
+    //    @MockBean
 //    private ItemRequestValidation itemRequestValidation;
 //    @MockBean
 //    private UserServiceImpl userService;
@@ -74,12 +57,12 @@ class ItemRequestServiceImplTest {
         request.setRequestorId(user.getId());
         request.setCreated(Timestamp.from(Instant.now()));
         List<Item> items = List.of();
-        ItemRequestDto itemRequestDto = new ItemRequestDto(request.getId()," ", request.getCreated(),
+        ItemRequestDto itemRequestDto = new ItemRequestDto(request.getId(), " ", request.getCreated(),
                 1L, items);
         // ItemRequestValidation itemRequestValidation = Mockito.mock(ItemRequestValidation.class);
         //UserService userService = Mockito.mock(UserServiceImpl.class);
         //RequestRepository requestRepository = Mockito.mock(RequestRepository.class);
-       // ItemRequestMapper itemRequestMapper = Mockito.mock(ItemRequestMapper.class);
+        // ItemRequestMapper itemRequestMapper = Mockito.mock(ItemRequestMapper.class);
         //ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(request);
         Mockito
                 .when(itemRequestMapper.toItemRequestDto(request))
