@@ -9,12 +9,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.Request;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.maper.ItemRequestMapper;
+import ru.practicum.shareit.request.validation.ItemRequestValidation;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -27,11 +30,11 @@ class ItemRequestServiceImplTest {
     @Autowired
     private ItemRequestService itemRequestServiceImpl;
 
+    @SpyBean
+    private ItemRequestValidation itemRequestValidation;
+    @SpyBean
+    private UserService userService;
     //    @MockBean
-//    private ItemRequestValidation itemRequestValidation;
-//    @MockBean
-//    private UserServiceImpl userService;
-//    @MockBean
 //    private UserMapper userMapper;
 //    @MockBean
 //    private UserValidation userValidation;
@@ -64,6 +67,12 @@ class ItemRequestServiceImplTest {
         //RequestRepository requestRepository = Mockito.mock(RequestRepository.class);
         // ItemRequestMapper itemRequestMapper = Mockito.mock(ItemRequestMapper.class);
         //ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(request);
+        Mockito.doNothing()
+                .when(itemRequestValidation).itemRequest(request);
+
+        Mockito.doNothing()
+                .when(userService).searchUser(user.getId());
+
         Mockito
                 .when(itemRequestMapper.toItemRequestDto(request))
                 .thenReturn(itemRequestDto);
