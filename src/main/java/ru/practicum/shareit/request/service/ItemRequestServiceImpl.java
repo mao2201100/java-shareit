@@ -33,8 +33,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemRequestDto create(Request request, long userId) {
-        itemRequestValidation.itemRequest(request);
-        userService.searchUser(userId);
+       // itemRequestValidation.itemRequest(request);
+       // userService.searchUser(userId);
         request.setRequestorId(userId);
         request.setCreated(Timestamp.from(Instant.now()));
         requestRepository.save(request);
