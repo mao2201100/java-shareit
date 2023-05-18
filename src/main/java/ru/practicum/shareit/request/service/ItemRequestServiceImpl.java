@@ -42,14 +42,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
-    public Collection<ItemRequestDto> findAllItemRequestUsers(Long from, Long size, long userId) {
+    public List<ItemRequestDto> findAllItemRequestUsers(Long from, Long size, long userId) {
         if (from == null && size == null) {
             return requestRepository.findAll().stream().map(itemRequestMapper::toItemRequestDto).collect(Collectors.toList());
         }
         itemRequestValidation.itemRequestIdIsFirstAndSizeIndex(from, size);
         Pageable pageable = PageRequest.of(Math.toIntExact(from), Math.toIntExact(size), Sort.by("created"));
         List<Request> requestList = requestRepository.findByRequestorIdNot(userId, pageable);
-        Collection<ItemRequestDto> requestDtoCollection = requestList.stream().map(itemRequestMapper::toItemRequestDto).collect(Collectors.toList());
+        List<ItemRequestDto> requestDtoCollection = requestList.stream().map(itemRequestMapper::toItemRequestDto).collect(Collectors.toList());
         return requestDtoCollection;
     }
 

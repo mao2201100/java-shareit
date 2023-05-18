@@ -38,7 +38,7 @@ public class ItemRequestController {
     // старым.
 
     @GetMapping("/all") // получить список запросов, созданных другими пользователями.
-    public Collection<ItemRequestDto> findAllItemRequestUsers(@RequestParam(required = false) Long from,
+    public List<ItemRequestDto> findAllItemRequestUsers(@RequestParam(required = false) Long from,
                                                               @RequestParam(required = false) Long size,
                                                               @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Executing Get findAllItemRequestUsers");

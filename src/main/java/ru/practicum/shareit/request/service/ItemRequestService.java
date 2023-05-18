@@ -10,7 +10,7 @@ public interface ItemRequestService {
 
     ItemRequestDto create(Request request, long userId);
 
-    Collection<ItemRequestDto> findAllItemRequestUsers(Long from, Long size, long userId);
+    List<ItemRequestDto> findAllItemRequestUsers(Long from, Long size, long userId);
 
     List<ItemRequestDto> findAllItemRequestOwner(Long ownerId);
 
