@@ -16,7 +16,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
