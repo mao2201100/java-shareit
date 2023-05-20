@@ -24,6 +24,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,19 +41,10 @@ class ItemRequestServiceImplTest {
     private UserService userService;
     @SpyBean
     private ItemRepository itemRepository;
-    //    @MockBean
-//    private UserMapper userMapper;
-//    @MockBean
-//    private UserValidation userValidation;
-//    @MockBean
-//    private EntityManager entityManager;
-//
     @MockBean
     private RequestRepository requestRepository;
     @MockBean
     private ItemRequestMapper itemRequestMapper;
-//    @MockBean
-//    private BookingServiceImpl bookingService;
 
     @Test
     void create() {
@@ -63,11 +55,8 @@ class ItemRequestServiceImplTest {
         user.setId(1);
         user.setName("test");
         user.setEmail("test@mail.ru");
-        request.setRequestorId(user.getId());
-        request.setCreated(Timestamp.from(Instant.now()));
-        List<Item> items = List.of();
         ItemRequestDto itemRequestDto = new ItemRequestDto(request.getId(), " ", request.getCreated(),
-                1L, items);
+                1L, Collections.EMPTY_LIST);
 
         Mockito.doNothing()
                 .when(itemRequestValidation).itemRequest(request);
@@ -101,8 +90,6 @@ class ItemRequestServiceImplTest {
         ItemRequestDto itemRequestDto = new ItemRequestDto(request.getId(), request.getDescription(), request.getCreated(),
                 1L, items);
         List<Request> list = List.of(request);
-//        List<ItemRequestDto> collectionOut = list;
-//                collectionOut.toArray();
 
         Mockito
                 .when(itemRequestMapper.toItemRequestDto(request))
