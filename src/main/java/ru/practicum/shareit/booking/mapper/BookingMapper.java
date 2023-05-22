@@ -6,10 +6,11 @@ import ru.practicum.shareit.booking.dto.BookingDtoOut;
 
 @Component
 public class BookingMapper {
-    private BookingMapper() {
+    BookingMapper() {
     }
 
     public BookingDtoOut toBookingDtoOut(Booking booking) {
+        if (booking.getItem() == null) throw new IllegalArgumentException("the Item parameter is missing");
         return new BookingDtoOut(booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),

@@ -6,17 +6,9 @@ class ItemMapperTest {
 
     @Test
     void toItemDto() {
+//        Item item = new Item();
+//        User ownet = new User();
     }
 
-    @Test
-    void setBookingRepository() {
-    }
 
-    @Test
-    void setBookingMapper() {
-    }
-
-    @Test
-    void setCommentsMapper() {
-    }
 }
