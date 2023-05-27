@@ -15,7 +15,7 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.validation.BookingValidation;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatus;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
@@ -39,8 +39,6 @@ class BookingServiceImplTest {
     @MockBean
     private BookingRepository bookingRepository;
     @MockBean
-    private BookingValidation bookingValidation;
-    @MockBean
     private ItemServiceImpl itemServiceImpl;
     @MockBean
     private UserRepository userRepository;
@@ -55,7 +53,7 @@ class BookingServiceImplTest {
     private static BookingDto bookingDto = new BookingDto();
     private static Item item = new Item();
     private static final User user = new User();
-    private static final LocalDateTime startTime = LocalDateTime.now();
+    private static final LocalDateTime startTime = LocalDateTime.now().plusMinutes(3);
     private static final LocalDateTime startTimeBookingBefore = LocalDateTime.now().minusHours(2L);
     private static final LocalDateTime endTime = LocalDateTime.now().plusHours(1L);
     private static final LocalDateTime endTimeBookingBefore = LocalDateTime.now().minusHours(1L);
@@ -206,12 +204,24 @@ class BookingServiceImplTest {
 
         Booking bookingResult = bookingService.getBookingId(booking.getId(), user.getId());
         Assert.assertSame(booking, bookingResult);
-        Assert.assertNull(bookingService.getBookingId(7L, user.getId()));
+
+        Assert.assertThrows(NotFoundException.class, () -> bookingService.getBookingId(777L, user.getId()));
 
     }
 
     @Test
     void searchBooking() {
+        Mockito
+                .when(bookingRepository.findById(5L))
+                .thenReturn(Optional.empty());
+
+        Assert.assertThrows(NotFoundException.class, () -> bookingService.searchBooking(5L));
+        try {
+            bookingService.searchBooking(5L);
+        } catch (Exception e) {
+            Assert.assertEquals("Бронирование не найдено",
+                    e.getMessage());
+        }
     }
 
     @Test

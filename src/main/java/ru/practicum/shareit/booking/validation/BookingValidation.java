@@ -10,8 +10,8 @@ import ru.practicum.shareit.exception.ValidationException;
 public class BookingValidation {
 
     public void bookingNotFound() {
-        log.warn("Валидация не пройдена: Брорирование не найдено");
-        throw new NotFoundException("Брорирование не найдено");
+        log.warn("Валидация не пройдена: Бронирование не найдено");
+        throw new NotFoundException("Бронирование не найдено");
     }
 
     public void approvederСheck() {
