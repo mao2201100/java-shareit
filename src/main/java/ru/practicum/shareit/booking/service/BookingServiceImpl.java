@@ -115,16 +115,13 @@ public class BookingServiceImpl implements BookingService {
         itemService.checkItemAvailable(dto.getItemId());
         itemService.checkItemOwner(dto.getItemId(), bookerId);
         dateValidation(dto);
-//        Request request = new Request();
-//        request.setRequestorId(bookerId);
-//        requestRepository.saveAndFlush(request);
-
         Booking booking = new Booking();
         BeanUtils.copyProperties(dto, booking);
         booking.setBooker(userRepository.findById(bookerId).orElseThrow());
         booking.setStatus(BookingStatus.WAITING);
         booking.setItem(itemRepository.findById(dto.getItemId()).orElseThrow());
-        return save(booking);
+        save(booking);
+        return booking;
     }
 
     @Transactional

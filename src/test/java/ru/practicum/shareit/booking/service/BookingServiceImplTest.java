@@ -14,9 +14,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
+import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.validation.BookingValidation;
 import ru.practicum.shareit.exception.UnsupportedStatus;
+import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
@@ -35,12 +40,20 @@ class BookingServiceImplTest {
     private BookingRepository bookingRepository;
     @MockBean
     private BookingValidation bookingValidation;
+    @MockBean
+    private ItemServiceImpl itemServiceImpl;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private ItemRepository itemRepository;
 
     @Autowired
     private BookingServiceImpl bookingService;
 
     private static Booking booking = new Booking();
     private static Booking bookingBefore = new Booking();
+    private static BookingDto bookingDto = new BookingDto();
+    private static Item item = new Item();
     private static final User user = new User();
     private static final LocalDateTime startTime = LocalDateTime.now();
     private static final LocalDateTime startTimeBookingBefore = LocalDateTime.now().minusHours(2L);
@@ -50,7 +63,7 @@ class BookingServiceImplTest {
     @BeforeAll
     static void setup() {
         user.setId(1L);
-        user.setName("test");
+        user.setName("testUser");
         user.setEmail("jepp@ebrilo.test");
 
         booking.setId(2L);
@@ -64,6 +77,20 @@ class BookingServiceImplTest {
         bookingBefore.setEnd(endTimeBookingBefore);
         bookingBefore.setBooker(user);
         bookingBefore.setStatus(BookingStatus.APPROVED);
+
+        bookingDto.setId(2L);
+        bookingDto.setStart(startTime);
+        bookingDto.setEnd(endTime);
+        bookingDto.setBookerId(user.getId());
+        bookingDto.setStatus(BookingStatus.REJECTED);
+        bookingDto.setItemId(5L);
+
+        item.setId(1L);
+        item.setOwner("testItem");
+        item.setDescription("testItemDescription");
+        item.setAvailable(true);
+        item.setOwner("testUser");
+        item.setOwnerId(user.getId());
     }
 
     @Test
@@ -131,15 +158,38 @@ class BookingServiceImplTest {
 
     @Test
     void bookingsOwner() {
-
     }
 
     @Test
     void create() {
-    }
+        Mockito.doNothing()
+                .when(userService).searchUser(Mockito.anyLong());
+        Mockito.doNothing()
+                .when(itemServiceImpl).checkItem(Mockito.anyLong());
+        Mockito.doNothing()
+                .when(itemServiceImpl).checkItemAvailable(Mockito.anyLong());
+        Mockito.doNothing()
+                .when(itemServiceImpl).checkItemOwner(Mockito.anyLong(), Mockito.anyLong());
+        Mockito
+                .when(userRepository.findById(user.getId()))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(itemRepository.findById(bookingDto.getItemId()))
+                .thenReturn(Optional.of(item));
+        Mockito
+                .when(bookingRepository.saveAndFlush(booking))
+                .thenReturn(booking);
 
-    @Test
-    void save() {
+        Booking bookingResult = bookingService.create(bookingDto, user.getId());
+
+        Mockito
+                .verify(bookingRepository, Mockito.times(1)).saveAndFlush(Mockito.any(Booking.class));
+
+        Assert.assertEquals(BookingStatus.WAITING,
+                bookingResult.getStatus());
+        Assert.assertSame(user, bookingResult.getBooker());
+        Assert.assertSame(item, bookingResult.getItem());
+
     }
 
     @Test
@@ -148,6 +198,16 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingId() {
+        Mockito.doNothing()
+                .when(userService).searchUser(user.getId());
+        Mockito
+                .when(bookingRepository.findById(booking.getId()))
+                .thenReturn(Optional.ofNullable(booking));
+
+        Booking bookingResult = bookingService.getBookingId(booking.getId(), user.getId());
+        Assert.assertSame(booking, bookingResult);
+        Assert.assertNull(bookingService.getBookingId(7L, user.getId()));
+
     }
 
     @Test
