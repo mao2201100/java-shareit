@@ -144,7 +144,8 @@ public class BookingServiceImpl implements BookingService {
             } else {
                 booking.setStatus(BookingStatus.REJECTED);
             }
-            return save(booking);
+            save(booking);
+            return booking;
         } else {
             bookingValidation.approvederСheck();
         }

@@ -70,6 +70,7 @@ class BookingServiceImplTest {
         booking.setEnd(endTime);
         booking.setBooker(user);
         booking.setStatus(BookingStatus.REJECTED);
+        booking.setItem(item);
 
         bookingBefore.setId(1L);
         bookingBefore.setStart(startTimeBookingBefore);
@@ -193,6 +194,37 @@ class BookingServiceImplTest {
 
     @Test
     void approvedOrRejected() {
+        boolean state = true;
+        Mockito
+                .when(bookingRepository.getById(2L))
+                        .thenReturn(booking);
+        Long itemId = booking.getItem().getId();
+        Mockito
+                .when(itemRepository.getById(itemId))
+                        .thenReturn(item);
+
+        Booking bookingTest = bookingService.approvedOrRejected(state, 1L, 2L);
+
+        Assert.assertEquals(BookingStatus.APPROVED, bookingTest.getStatus());
+
+        state = false;
+        bookingTest = bookingService.approvedOrRejected(state, 1L, 2L);
+
+        Assert.assertEquals(BookingStatus.REJECTED, bookingTest.getStatus());
+    }
+
+    @Test
+    void approvedOrRejectedValidation() {
+        boolean state = true;
+        Mockito
+                .when(bookingRepository.getById(2L))
+                .thenReturn(booking);
+        Long itemId = booking.getItem().getId();
+        Mockito
+                .when(itemRepository.getById(itemId))
+                .thenReturn(item);
+
+        Assert.assertThrows(NotFoundException.class, () -> bookingService.approvedOrRejected(state, 555L, 2L));
     }
 
     @Test
