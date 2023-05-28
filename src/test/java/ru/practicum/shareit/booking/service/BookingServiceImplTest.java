@@ -53,6 +53,7 @@ class BookingServiceImplTest {
     private static Booking bookingBefore = new Booking();
     private static BookingDto bookingDto = new BookingDto();
     private static Item item = new Item();
+    private static Item item1 = new Item();
     private static final User user = new User();
     private static final LocalDateTime startTime = LocalDateTime.now().plusMinutes(3);
     private static final LocalDateTime startTimeBookingBefore = LocalDateTime.now().minusHours(2L);
@@ -77,6 +78,7 @@ class BookingServiceImplTest {
         bookingBefore.setEnd(endTimeBookingBefore);
         bookingBefore.setBooker(user);
         bookingBefore.setStatus(BookingStatus.APPROVED);
+        bookingBefore.setItem(item1);
 
         bookingDto.setId(2L);
         bookingDto.setStart(startTime);
@@ -86,11 +88,18 @@ class BookingServiceImplTest {
         bookingDto.setItemId(5L);
 
         item.setId(1L);
-        item.setOwner("testItem");
+        item.setOwner("testUser");
         item.setDescription("testItemDescription");
         item.setAvailable(true);
         item.setOwner("testUser");
         item.setOwnerId(user.getId());
+
+        item1.setId(2L);
+        item1.setOwner("testUser");
+        item1.setDescription("testItemDescription");
+        item1.setAvailable(true);
+        item1.setOwner("testUser555");
+        item1.setOwnerId(555L);
     }
 
     @Test
@@ -158,6 +167,43 @@ class BookingServiceImplTest {
 
     @Test
     void bookingsOwner() {
+        List<Booking> bookingRejected = List.of(booking);
+        List<Booking> bookingAll = List.of(bookingBefore, booking);
+        List<Booking> bookingEmpty = List.of();
+
+        Mockito.doNothing()
+                .when(userService).searchUser(Mockito.anyLong());
+
+        Mockito
+                .when(bookingRepository.fetchBookingByStateCurrentByOwnerId(user.getId()))
+                .thenReturn(Collections.emptyList());
+        Mockito
+                .when(bookingRepository.fetchBookingByStatePastByOwnerId(user.getId()))
+                .thenReturn(Collections.emptyList());
+        Mockito
+                .when(bookingRepository.fetchBookingByStateFutureByOwnerId(user.getId()))
+                .thenReturn(Collections.emptyList());
+        Mockito
+                .when(bookingRepository.fetchBookingByStatusByOwnerId(user.getId(), "REJECTED"))
+                .thenReturn(List.of(booking));
+        Mockito
+                .when(bookingRepository.fetchBookingOwnerId(user.getId()))
+                .thenReturn(List.of(bookingBefore, booking));
+
+        List<Booking> bookingsUserTest = (List) bookingService.bookingsOwner("REJECTED", 1, null, null);
+
+        Assert.assertEquals(bookingRejected, bookingsUserTest);
+
+        List<Booking> bookingsUserTest2 = (List) bookingService.bookingsOwner("ALL", 1, null, null);
+
+        Assert.assertEquals(bookingAll, bookingsUserTest2);
+
+        List<Booking> bookingsUserEmpty = (List) bookingService.bookingsOwner("FUTURE", 1, null, null);
+
+        Assert.assertEquals(bookingEmpty, bookingsUserEmpty);
+
+        Assert.assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsOwner("XXX", 1, null, null));
+
     }
 
     @Test
@@ -194,23 +240,21 @@ class BookingServiceImplTest {
 
     @Test
     void approvedOrRejected() {
-        boolean state = true;
         Mockito
                 .when(bookingRepository.getById(2L))
-                        .thenReturn(booking);
+                .thenReturn(booking);
         Long itemId = booking.getItem().getId();
         Mockito
                 .when(itemRepository.getById(itemId))
-                        .thenReturn(item);
+                .thenReturn(item);
 
-        Booking bookingTest = bookingService.approvedOrRejected(state, 1L, 2L);
+        bookingService.approvedOrRejected(true, 1L, 2L);
 
-        Assert.assertEquals(BookingStatus.APPROVED, bookingTest.getStatus());
+        Assert.assertEquals(BookingStatus.APPROVED, booking.getStatus());
 
-        state = false;
-        bookingTest = bookingService.approvedOrRejected(state, 1L, 2L);
+        bookingService.approvedOrRejected(false, 1L, 2L);
 
-        Assert.assertEquals(BookingStatus.REJECTED, bookingTest.getStatus());
+        Assert.assertEquals(BookingStatus.REJECTED, booking.getStatus());
     }
 
     @Test
@@ -274,7 +318,5 @@ class BookingServiceImplTest {
             Assert.assertEquals("Введены не верные даты бронирования",
                     e.getMessage());
         }
-
-
     }
 }
