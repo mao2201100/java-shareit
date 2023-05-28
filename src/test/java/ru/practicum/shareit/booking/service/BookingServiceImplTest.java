@@ -17,6 +17,7 @@ import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStatus;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemServiceImpl;
@@ -226,5 +227,22 @@ class BookingServiceImplTest {
 
     @Test
     void dateValidation() {
+        BookingDto bookingDateValidation = new BookingDto();
+        bookingDateValidation.setId(3L);
+        bookingDateValidation.setStart(LocalDateTime.now());
+        bookingDateValidation.setEnd(LocalDateTime.now().minusHours(1));
+        bookingDateValidation.setBookerId(user.getId());
+        bookingDateValidation.setStatus(BookingStatus.REJECTED);
+        bookingDateValidation.setItemId(1);
+
+        Assert.assertThrows(ValidationException.class, () -> bookingService.dateValidation(bookingDateValidation));
+        try {
+            bookingService.dateValidation(bookingDateValidation);
+        } catch (Exception e) {
+            Assert.assertEquals("Введены не верные даты бронирования",
+                    e.getMessage());
+        }
+
+
     }
 }
