@@ -319,4 +319,11 @@ class BookingServiceImplTest {
                     e.getMessage());
         }
     }
+
+    @Test
+    void save() {
+        bookingService.save(booking);
+        Mockito
+                .verify(bookingRepository, Mockito.times(1)).saveAndFlush(Mockito.any(Booking.class));
+    }
 }
