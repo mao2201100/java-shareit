@@ -91,7 +91,6 @@ class BookingServiceImplTest {
         item.setOwner("testUser");
         item.setDescription("testItemDescription");
         item.setAvailable(true);
-        item.setOwner("testUser");
         item.setOwnerId(user.getId());
 
         item1.setId(2L);
