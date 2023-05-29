@@ -9,8 +9,6 @@ import ru.practicum.shareit.request.Request;
 
 import java.sql.Timestamp;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class ItemRequestValidationTest {
     private ItemRequestValidation itemRequestValidation = new ItemRequestValidation();
     private static Request request = new Request();

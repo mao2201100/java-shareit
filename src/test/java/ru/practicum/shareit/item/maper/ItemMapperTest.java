@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingStatus;
-import ru.practicum.shareit.booking.dto.BookingDtoOut;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -22,7 +21,6 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -34,8 +32,7 @@ class ItemMapperTest {
     private BookingMapper bookingMapper;
     @MockBean
     private BookingRepository bookingRepository;
-    //    @MockBean
-//    private BookingMapper bookingMapper;
+
     @MockBean
     private CommentsMapper commentsMapper;
     private static Item item = new Item();
