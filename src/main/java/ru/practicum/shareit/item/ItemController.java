@@ -31,7 +31,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public Collection<ItemDto> itemAllOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId) {  //получение списка всех вещей конкретоного пользователя.
+    public Collection<ItemDto> itemAllOwnerId(@RequestHeader("X-Sharer-User-Id") long ownerId) {  //получение списка всех вещей конкретного пользователя.
         log.info("Executing Get itemAllOwnerId: " + ownerId);
         return itemService.itemAllOwnerId(ownerId);
     }
