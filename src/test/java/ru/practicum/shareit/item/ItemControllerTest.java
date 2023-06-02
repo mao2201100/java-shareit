@@ -44,12 +44,12 @@ class ItemControllerTest {
     private static List<CommentDto> commentList = List.of();
     private static List<Comments> comments = List.of();
     private static Item item = new Item();
-    private ItemDto itemDto1 = new ItemDto(1L, "itemDtoTest1", "itemDtoTestDescription1"
-            , true, 1L, 1L, null, null, commentList);
-    private ItemDto itemDto2 = new ItemDto(2L, "itemDtoTest2", "itemDtoTestDescription2"
-            , true, 1L, 2L, null, null, commentList);
-    private ItemDto itemDto3 = new ItemDto(3L, "itemDtoTest2", "itemDtoTestDescription2"
-            , true, 1L, 3L, null, null, commentList);
+    private ItemDto itemDto1 = new ItemDto(1L, "itemDtoTest1", "itemDtoTestDescription1",
+            true, 1L, 1L, null, null, commentList);
+    private ItemDto itemDto2 = new ItemDto(2L, "itemDtoTest2", "itemDtoTestDescription2",
+            true, 1L, 2L, null, null, commentList);
+    private ItemDto itemDto3 = new ItemDto(3L, "itemDtoTest2", "itemDtoTestDescription2",
+            true, 1L, 3L, null, null, commentList);
     private final List<ItemDto> itemDtoList = List.of(itemDto1, itemDto2, itemDto3);
 
     @BeforeAll
