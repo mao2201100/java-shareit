@@ -140,7 +140,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void findItemRequest() throws Exception{
+    void findItemRequest() throws Exception {
         when(itemRequestService.findItemRequest(request.getId(), user.getId()))
                 .thenReturn(itemRequestDto1);
 
