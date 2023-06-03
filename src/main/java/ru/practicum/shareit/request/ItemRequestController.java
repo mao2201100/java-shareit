@@ -21,7 +21,8 @@ public class ItemRequestController {
     }
 
     @PostMapping
-    public ItemRequestDto createItemRequest(@RequestBody Request request, @RequestHeader("X-Sharer-User-Id") long userId) { // создать запрос вещи
+    public ItemRequestDto createItemRequest(@RequestBody Request request,
+                                            @RequestHeader("X-Sharer-User-Id") long userId) { // создать запрос вещи
         log.info("Executing Post createItemRequest");
         return requestService.create(request, userId);
     }
