@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -11,16 +12,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.validation.UserValidation;
 
+import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
@@ -32,12 +37,24 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     @SpyBean
     UserMapper userMapper;
-    @SpyBean
-    UserValidation userValidation;
+    @Autowired
+    private UserValidation userValidation;
+    @MockBean
+    private EntityManager entityManager;
+
+    private static final User userTest = new User();
+
+    @BeforeAll
+    static void setup() {
+        userTest.setId(1L);
+        userTest.setEmail("test@mail.ru");
+        userTest.setName("Test");
+    }
+
 
     public User createTestUser() {
         User user = new User();
-        user.setId(1);
+        user.setId(1L);
         user.setEmail("test@mail.ru");
         user.setName("Test");
         return user;
@@ -91,10 +108,44 @@ class UserServiceImplTest {
 
     @Test
     void create() {
+
+        Mockito.doNothing()
+                .when(entityManager).persist(Mockito.any(User.class));
+        userService.create(createTestUser());
+        UserDto userDto = UserMapper.toUserDto(userTest);
+        assertEquals(1L, userDto.getId());
+        assertEquals("test@mail.ru", userDto.getEmail());
+        assertEquals("Test", userDto.getName());
     }
 
     @Test
     void update() {
+        User userUpdate = new User();
+        userUpdate.setName("TestUpdate");
+        userUpdate.setEmail("TestUpdate@mail.ru");
+
+        User userTestUpdate = new User();
+        userTestUpdate.setId(userTest.getId());
+        userTestUpdate.setName("TestUpdate");
+        userTestUpdate.setEmail("TestUpdate@mail.ru");
+
+        Mockito
+                .when(userRepository.getById(Mockito.anyLong()))
+                .thenReturn(userTest);
+
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(userTest));
+
+        Mockito
+                .when(userRepository.save(Mockito.any(User.class)))
+                .thenReturn(userTestUpdate);
+
+
+        UserDto userDto = userService.update(userTest.getId(), userUpdate);
+        assertEquals(1L, userDto.getId());
+        assertEquals("TestUpdate", userDto.getName());
+        assertEquals("TestUpdate@mail.ru", userDto.getEmail());
     }
 
     @Test
@@ -112,22 +163,21 @@ class UserServiceImplTest {
     }
 
     @Test
-    void searchUserNotFind() { // не знаю как протестировать неготивнй сценарий.
-//        Mockito
-//                .when(userRepository.findById(33L));
-//
-//        userService.searchUser(33L);
-        //Mockito.verify(userValidation, Mockito.times(1)).userNotFound();
+    void searchUserNotFind() { // не знаю как протестировать неготивный сценарий.
+        User user = null;
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.ofNullable(user));
 
-        //     Assert.assertThrows(ValidationException.class, () -> userValidation.userNotFound());
+        Assert.assertThrows(NotFoundException.class, () -> userService.searchUser(33L));
 
-//        try {
-//            userValidation.userNotFound();
-//        } catch (Exception e) {
-//            Assert.assertEquals("Пользователь не найден",
-//                    e.getMessage());
-//            return;
-//        }
+        try {
+            userValidation.userNotFound();
+        } catch (Exception e) {
+            Assert.assertEquals("Пользователь не найден",
+                    e.getMessage());
+            return;
+        }
     }
 
 
@@ -143,7 +193,5 @@ class UserServiceImplTest {
         userService.deleteUser(user.getId());
         Mockito.verify(userRepository, Mockito.times(1))
                 .delete(user);
-
-
     }
 }
