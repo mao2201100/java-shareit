@@ -97,9 +97,9 @@ class ItemServiceImplTest {
 
         ItemDto itemDtoResult = itemService.findItemById(item.getId(), user.getId());
 
-        assertEquals(1l, itemDtoResult.getId());
+        assertEquals(1L, itemDtoResult.getId());
         assertEquals("testItem", itemDtoResult.getName());
-        assertEquals(1l, itemDtoResult.getOwnerId());
+        assertEquals(1L, itemDtoResult.getOwnerId());
         assertEquals("testDescription", itemDtoResult.getDescription());
         assertEquals(true, itemDtoResult.getAvailable());
         assertArrayEquals(commentsList.toArray(), itemDtoResult.getComments().toArray());
@@ -115,7 +115,7 @@ class ItemServiceImplTest {
 
         assertEquals(1L, listResult.get(0).getId());
         assertEquals("testItem", listResult.get(0).getName());
-        assertEquals(1l, listResult.get(0).getOwnerId());
+        assertEquals(1L, listResult.get(0).getOwnerId());
         assertEquals("testDescription", listResult.get(0).getDescription());
         assertEquals(true, listResult.get(0).getAvailable());
         assertArrayEquals(commentsList.toArray(), listResult.get(0).getComments().toArray());
@@ -135,7 +135,7 @@ class ItemServiceImplTest {
         List<ItemDto> listResult = itemService.itemSearch("test", user.getId()).stream().collect(Collectors.toList());
         assertEquals(1L, listResult.get(0).getId());
         assertEquals("testItem", listResult.get(0).getName());
-        assertEquals(1l, listResult.get(0).getOwnerId());
+        assertEquals(1L, listResult.get(0).getOwnerId());
         assertEquals("testDescription", listResult.get(0).getDescription());
         assertEquals(true, listResult.get(0).getAvailable());
         assertArrayEquals(commentsList.toArray(), listResult.get(0).getComments().toArray());
@@ -165,9 +165,9 @@ class ItemServiceImplTest {
 
         ItemDto itemDtoResult = itemService.create(item, user.getId());
 
-        assertEquals(1l, itemDtoResult.getId());
+        assertEquals(1L, itemDtoResult.getId());
         assertEquals("testItem", itemDtoResult.getName());
-        assertEquals(1l, itemDtoResult.getOwnerId());
+        assertEquals(1L, itemDtoResult.getOwnerId());
         assertEquals("testDescription", itemDtoResult.getDescription());
         assertEquals(true, itemDtoResult.getAvailable());
         assertArrayEquals(commentsList.toArray(), itemDtoResult.getComments().toArray());
