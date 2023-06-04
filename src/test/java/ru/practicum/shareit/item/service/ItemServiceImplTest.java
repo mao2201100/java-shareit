@@ -87,7 +87,7 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void findItemById(ItemDto itemById) {
+    void findItemById() {
         Mockito
                 .when(itemRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(item));
@@ -95,12 +95,12 @@ class ItemServiceImplTest {
                 .when(itemRepository.getById(Mockito.anyLong()))
                 .thenReturn(item);
 
-        ItemDto itemDtoRes = itemById;
+        ItemDto itemDtoRes = itemService.findItemById(item.getId(), user.getId());
 
         assertEquals(1L, itemDtoRes.getId());
-        assertEquals("testItemUpdate", itemDtoRes.getName());
+        assertEquals("testItem", itemDtoRes.getName());
         assertEquals(1L, itemDtoRes.getOwnerId());
-        assertEquals("testDescriptionUpdate", itemDtoRes.getDescription());
+        assertEquals("testDescription", itemDtoRes.getDescription());
         assertEquals(true, itemDtoRes.getAvailable());
         assertArrayEquals(commentsList.toArray(), itemDtoRes.getComments().toArray());
     }
@@ -134,9 +134,9 @@ class ItemServiceImplTest {
 
         List<ItemDto> listResult = itemService.itemSearch("test", user.getId()).stream().collect(Collectors.toList());
         assertEquals(1L, listResult.get(0).getId());
-        assertEquals("testItemUpdate", listResult.get(0).getName());
+        assertEquals("testItem", listResult.get(0).getName());
         assertEquals(1L, listResult.get(0).getOwnerId());
-        assertEquals("testDescriptionUpdate", listResult.get(0).getDescription());
+        assertEquals("testDescription", listResult.get(0).getDescription());
         assertEquals(true, listResult.get(0).getAvailable());
         assertArrayEquals(commentsList.toArray(), listResult.get(0).getComments().toArray());
     }
@@ -183,22 +183,30 @@ class ItemServiceImplTest {
         itemUpdate.setAvailable(true);
         itemUpdate.setComments(commentsList);
 
+        Item item2 = new Item();
+        item2.setId(2L);
+        item2.setName("testItem2");
+        item2.setOwnerId(1L);
+        item2.setDescription("testDescription2");
+        item2.setAvailable(true);
+        item2.setComments(commentsList);
+
         Mockito
                 .when(itemRepository.getById(Mockito.anyLong()))
-                .thenReturn(item);
+                .thenReturn(item2);
         Mockito
                 .when(itemRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.ofNullable(item));
+                .thenReturn(Optional.ofNullable(item2));
         Mockito
                 .when(userRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(user));
         Mockito
                 .when(itemRepository.save(Mockito.any(Item.class)))
-                .thenReturn(item);
+                .thenReturn(item2);
 
-        ItemDto itemDtoResult = itemService.update(itemUpdate, item.getId(), user.getId());
+        ItemDto itemDtoResult = itemService.update(itemUpdate, item2.getId(), user.getId());
 
-        assertEquals(1L, itemDtoResult.getId());
+        assertEquals(2L, itemDtoResult.getId());
         assertEquals("testItemUpdate", itemDtoResult.getName());
         assertEquals(1L, itemDtoResult.getOwnerId());
         assertEquals("testDescriptionUpdate", itemDtoResult.getDescription());
