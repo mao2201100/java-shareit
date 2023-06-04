@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -26,6 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
@@ -149,6 +151,65 @@ class UserServiceImplTest {
     }
 
     @Test
+    void updateEmptyUser() {
+        assertThrows(NotFoundException.class, () -> userService.update(5L, userTest));
+        try {
+            userService.update(5L, userTest);
+        } catch (Exception e) {
+            Assert.assertEquals("Пользователь не найден",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    void updateValidationCreateName() {
+        User userUpdate = new User();
+        userUpdate.setId(4L);
+        userUpdate.setName("");
+        userUpdate.setEmail("TestUpdate@mail.ru");
+
+        Mockito
+                .when(userRepository.getById(Mockito.anyLong()))
+                .thenReturn(userUpdate);
+
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(userUpdate));
+
+        assertThrows(ValidationException.class, () -> userService.update(userUpdate.getId(), userTest));
+        try {
+            userService.update(userUpdate.getId(), userTest);
+        } catch (Exception e) {
+            Assert.assertEquals("логин не может быть пустым и содержать пробелы ",
+                    e.getMessage());
+        }
+    }
+
+    @Test
+    void updateValidationCreateEmail() {
+        User userUpdate = new User();
+        userUpdate.setId(4L);
+        userUpdate.setName("TestName");
+        userUpdate.setEmail("TestUpdatemail.ru");
+
+        Mockito
+                .when(userRepository.getById(Mockito.anyLong()))
+                .thenReturn(userUpdate);
+
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(userUpdate));
+
+        assertThrows(ValidationException.class, () -> userService.update(userUpdate.getId(), userTest));
+        try {
+            userService.update(userUpdate.getId(), userTest);
+        } catch (Exception e) {
+            Assert.assertEquals("электронная почта не может быть пустой и должна содержать символ @",
+                    e.getMessage());
+        }
+    }
+
+    @Test
     void searchUser() {
 
         User user = createTestUser();
@@ -194,4 +255,16 @@ class UserServiceImplTest {
         Mockito.verify(userRepository, Mockito.times(1))
                 .delete(user);
     }
+
+    @Test
+    void deleteEmptyUser() {
+        assertThrows(NotFoundException.class, () -> userService.deleteUser(1L));
+        try {
+            userService.deleteUser(1L);
+        } catch (Exception e) {
+            Assert.assertEquals("Пользователь не найден",
+                    e.getMessage());
+        }
+    }
+
 }
