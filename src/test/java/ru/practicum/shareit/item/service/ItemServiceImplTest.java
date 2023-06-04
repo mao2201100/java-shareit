@@ -251,6 +251,33 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void createCommentsEmptyText() {
+        Comments comments = new Comments();
+        comments.setId(1L);
+        comments.setText("");
+        comments.setCreated(Timestamp.valueOf(LocalDateTime.now()));
+        comments.setAuthorId(2L);
+        comments.setItemId(1L);
+
+        Mockito
+                .when(itemRepository.getById(Mockito.anyLong()))
+                .thenReturn(item);
+
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
+
+        Assert.assertThrows(ValidationException.class, () -> itemService.createComments(comments, 2L, item.getId()));
+        try {
+            itemService.createComments(comments, 2L, item.getId());
+        } catch (Exception e) {
+            Assert.assertEquals("Комментарий не может быть пустым",
+                    e.getMessage());
+        }
+    }
+
+
+    @Test
     void checkItem() {
         Item item1 = null;
         Mockito
