@@ -27,5 +27,4 @@ public class UserValidation {
         throw new NotFoundException("Пользователь не найден");
     }
 
-
 }
