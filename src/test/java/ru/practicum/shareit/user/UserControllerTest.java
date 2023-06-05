@@ -16,8 +16,7 @@ import ru.practicum.shareit.user.service.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
@@ -61,6 +60,13 @@ class UserControllerTest {
     }
 
     @Test
+    void findByIdException() throws Exception {
+        mvc.perform(get("/users/k"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     void readAll() throws Exception {
         when(userService.getUsers())
                 .thenReturn(userDtoList);
@@ -81,6 +87,13 @@ class UserControllerTest {
     }
 
     @Test
+    void readAllException() throws Exception {
+        mvc.perform(get("/users/k"))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     void create() throws Exception {
         when(userService.create(any()))
                 .thenReturn(user1);
@@ -94,6 +107,16 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id", is(user1.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(user1.getName())))
                 .andExpect(jsonPath("$.email", is(user1.getEmail())));
+    }
+
+    @Test
+    void createException() throws Exception {
+        mvc.perform(post("/users/k")
+                        .content(mapper.writeValueAsString(user1))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
 
     @Test
@@ -114,6 +137,16 @@ class UserControllerTest {
     }
 
     @Test
+    void updateEXception() throws Exception {
+        UserDto userUpdateDto = new UserDto(1L, "test1Update", "test1Update@mail.ru");
+        mvc.perform(patch("/users/k")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(mapper.writeValueAsString(userUpdateDto))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
     void deleteFriends() throws Exception {
         Long idUser = 1L;
         doNothing()
@@ -125,5 +158,19 @@ class UserControllerTest {
                         .content(mapper.writeValueAsString(idUser))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void deleteFriendsException() throws Exception {
+        Long idUser = 1L;
+        doNothing()
+                .when(userService).deleteUser(anyLong());
+
+        mvc.perform(delete("/users/k")
+                        .param("id", "1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(idUser))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
     }
 }

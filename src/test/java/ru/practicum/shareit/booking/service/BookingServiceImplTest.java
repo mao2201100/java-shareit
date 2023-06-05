@@ -296,17 +296,29 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingId() {
-        Mockito.doNothing()
-                .when(userService).searchUser(user.getId());
         Mockito
-                .when(bookingRepository.findById(booking.getId()))
+                .when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(booking));
 
         Booking bookingResult = bookingService.getBookingId(booking.getId(), user.getId());
         Assert.assertSame(booking, bookingResult);
 
         Assert.assertThrows(NotFoundException.class, () -> bookingService.getBookingId(777L, user.getId()));
+    }
 
+    @Test
+    void getBookingIdBeadBooking() {
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        Assert.assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
+        try {
+            bookingService.bookingId(55L, 55L);
+        } catch (Exception e) {
+            Assert.assertEquals("Бронирование не найдено",
+                    e.getMessage());
+        }
     }
 
     @Test

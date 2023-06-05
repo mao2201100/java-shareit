@@ -167,8 +167,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingRepository.findById(bookingId).orElse(null);
 
-        if (booking != null && (
-                booking.getBooker().getId() == userId || booking.getItem().getOwnerId() == userId)) {
+        if (booking != null && (booking.getBooker().getId() == userId || booking.getItem().getOwnerId() == userId)) {
             // Проверка на автора бронирования, либо владельца вещи,
             // к которой относится бронирование.
             return booking;

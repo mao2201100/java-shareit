@@ -65,7 +65,7 @@ class ItemMapperTest {
     void toItemDto() {
         List<Booking> lastBookings = List.of(booking);
         Mockito
-                .when(bookingRepository.fetchLastBookerByItemForAll(item.getId(), 1L))
+                .when(bookingRepository.fetchLastBookerByItemForAll(Mockito.anyLong(), Mockito.anyLong()))
                 .thenReturn(lastBookings);
 
         ItemDto itemDto = itemMapper.toItemDto(item, 1L);
@@ -78,5 +78,5 @@ class ItemMapperTest {
         Assert.assertNull(itemDto.getNextBooking());
         Assert.assertNull(itemDto.getComments());
     }
-
 }
+
