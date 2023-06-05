@@ -114,6 +114,7 @@ public class BookingServiceImpl implements BookingService {
         itemService.checkItem(dto.getItemId());
         itemService.checkItemAvailable(dto.getItemId());
         itemService.checkItemOwner(dto.getItemId(), bookerId);
+        String e = "fg";
         dateValidation(dto);
         Booking booking = new Booking();
         BeanUtils.copyProperties(dto, booking);

@@ -20,7 +20,6 @@ import ru.practicum.shareit.exception.UnsupportedStatus;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
@@ -41,8 +40,6 @@ class BookingServiceImplTest {
     private UserServiceImpl userService;
     @MockBean
     private BookingRepository bookingRepository;
-    @MockBean
-    private ItemServiceImpl itemServiceImpl;
     @MockBean
     private UserRepository userRepository;
     @MockBean
@@ -87,7 +84,7 @@ class BookingServiceImplTest {
         bookingDto.setEnd(endTime);
         bookingDto.setBookerId(user.getId());
         bookingDto.setStatus(BookingStatus.REJECTED);
-        bookingDto.setItemId(5L);
+        bookingDto.setItemId(1L);
 
         item.setId(1L);
         item.setOwner("testUser");
@@ -233,7 +230,7 @@ class BookingServiceImplTest {
                 .when(bookingRepository.saveAndFlush(Mockito.any(Booking.class)))
                 .thenReturn(booking);
 
-        Booking bookingResult = bookingService.create(bookingDto, user.getId());
+        Booking bookingResult = bookingService.create(bookingDto, 2L);
 
         Mockito
                 .verify(bookingRepository, Mockito.times(1))
@@ -300,10 +297,30 @@ class BookingServiceImplTest {
                 .when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(booking));
 
-        Booking bookingResult = bookingService.getBookingId(booking.getId(), user.getId());
-        Assert.assertSame(booking, bookingResult);
+        Booking booking1 = bookingService.getBookingId(booking.getId(), user.getId());
+
+        assertEquals(booking.getId(), booking1.getId());
+        assertEquals(booking.getStatus(), booking1.getStatus());
+        assertEquals(booking.getItem(), booking1.getItem());
+        assertEquals(booking.getStart(), booking1.getStart());
+        assertEquals(booking.getEnd(), booking1.getEnd());
+        assertEquals(booking.getBooker(), booking1.getBooker());
+    }
+
+    @Test
+    void getBookingIdValidation() {
+        Booking booking1 = null;
+        Mockito
+                .when(bookingRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.ofNullable(booking1));
 
         Assert.assertThrows(NotFoundException.class, () -> bookingService.getBookingId(777L, user.getId()));
+        try {
+            bookingService.getBookingId(777L, user.getId());
+        } catch (Exception e) {
+            Assert.assertEquals("Бронирование не найдено",
+                    e.getMessage());
+        }
     }
 
     @Test
