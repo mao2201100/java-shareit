@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.maper;
 
 import org.junit.Assert;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.shareit.comments.Comments;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -25,6 +27,31 @@ class CommentsMapperTest {
     UserRepository userRepository;
     @Autowired
     CommentsMapper commentsMapper;
+
+    private static User user = new User();
+
+    @BeforeAll
+    static void setup() {
+        user.setName("test");
+        user.setEmail("mail@mail.ru");
+    }
+
+    @Test
+    void toCommentsDtoAuthorBead() {
+        Comments comments = new Comments();
+        comments.setId(1);
+        comments.setCreated(Timestamp.valueOf("2023-05-22 23:00:29"));
+        comments.setText("test");
+        comments.setItemId(1);
+
+        CommentDto commentDto = commentsMapper.toCommentsDto(comments);
+        Assert.assertEquals(1, commentDto.getId());
+        Assert.assertEquals("test", commentDto.getText());
+        Assert.assertEquals(0, commentDto.getAuthorId());
+        Assert.assertEquals("2023-05-22 23:00:29.0", commentDto.getCreated().toString());
+        Assert.assertEquals(1, commentDto.getItemId());
+        Assert.assertEquals(null, commentDto.getAuthorName());
+    }
 
     @Test
     void toCommentsDto() {
@@ -48,8 +75,6 @@ class CommentsMapperTest {
         Assert.assertEquals("2023-05-22 23:00:29.0", comments.getCreated().toString());
         Assert.assertEquals(1, comments.getItemId());
 
-
     }
-
 
 }
