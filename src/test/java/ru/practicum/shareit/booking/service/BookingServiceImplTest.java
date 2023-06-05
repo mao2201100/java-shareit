@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,34 +21,38 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class BookingServiceImplTest {
     @MockBean
-    private UserServiceImpl userService;
-    @MockBean
     private BookingRepository bookingRepository;
     @MockBean
     private UserRepository userRepository;
     @MockBean
     private ItemRepository itemRepository;
-
+    @Autowired
+    private UserService userService;
     @Autowired
     private BookingServiceImpl bookingService;
 
+    @Autowired
+    BookingService bookingServiceIn;
+
     private static Booking booking = new Booking();
     private static Booking bookingBefore = new Booking();
+    private static Booking bookingPast = new Booking();
     private static BookingDto bookingDto = new BookingDto();
     private static Item item = new Item();
     private static Item item1 = new Item();
@@ -79,6 +82,13 @@ class BookingServiceImplTest {
         bookingBefore.setStatus(BookingStatus.APPROVED);
         bookingBefore.setItem(item1);
 
+        bookingPast.setId(1L);
+        bookingPast.setStart(LocalDateTime.now().plusDays(1));
+        bookingPast.setEnd(LocalDateTime.now().plusDays(2));
+        bookingPast.setBooker(user);
+        bookingPast.setStatus(BookingStatus.APPROVED);
+        bookingPast.setItem(item1);
+
         bookingDto.setId(2L);
         bookingDto.setStart(startTime);
         bookingDto.setEnd(endTime);
@@ -102,9 +112,9 @@ class BookingServiceImplTest {
 
     @Test
     void bookingId() {
-        Mockito.doNothing()
-                .when(userService).searchUser(1L);
-
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                        .thenReturn(Optional.of(user));
         Mockito
                 .when(bookingRepository.findById(booking.getId()))
                 .thenReturn(Optional.ofNullable(booking));
@@ -115,24 +125,34 @@ class BookingServiceImplTest {
 
 
         Booking result = bookingService.bookingId(booking.getId(), user.getId());
-        Assert.assertEquals(1L, result.getBooker().getId());
-        Assert.assertEquals(2L, result.getId());
-        Assert.assertEquals(startTime, result.getStart());
-        Assert.assertEquals(endTime, result.getEnd());
-        Assert.assertThrows(UnsupportedStatus.class, () -> bookingService.bookingId(3, user.getId()));
+        assertEquals(1L, result.getBooker().getId());
+        assertEquals(2L, result.getId());
+        assertEquals(startTime, result.getStart());
+        assertEquals(endTime, result.getEnd());
+        assertThrows(UnsupportedStatus.class, () -> bookingService.bookingId(3, user.getId()));
+        try {
+            bookingService.bookingId(3, user.getId());
+        } catch (Exception e) {
+            assertEquals("Unknown state: UNSUPPORTED_STATUS",
+                    e.getMessage());
+        }
     }
 
     @Test
     void bookingIdBeadBooking() {
         Mockito
                 .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
+
+        Mockito
+                .when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.empty());
 
-        Assert.assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
+        assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
         try {
             bookingService.bookingId(55L, 55L);
         } catch (Exception e) {
-            Assert.assertEquals("Бронирование не найдено",
+            assertEquals("Бронирование не найдено",
                     e.getMessage());
         }
     }
@@ -143,8 +163,9 @@ class BookingServiceImplTest {
         List<Booking> bookingAll = List.of(bookingBefore, booking);
         List<Booking> bookingEmpty = List.of();
 
-        Mockito.doNothing()
-                .when(userService).searchUser(Mockito.anyLong());
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                        .thenReturn(Optional.of(user));
 
         Mockito
                 .when(bookingRepository.fetchBookingByStateCurrentByBookerId(user.getId()))
@@ -164,18 +185,40 @@ class BookingServiceImplTest {
 
         List<Booking> bookingsUserTest = (List) bookingService.bookingsUser("REJECTED", 1, null, null);
 
-        Assert.assertEquals(bookingRejected, bookingsUserTest);
+        assertEquals(bookingRejected, bookingsUserTest);
 
         List<Booking> bookingsUserTest2 = (List) bookingService.bookingsUser("ALL", 1, null, null);
 
-        Assert.assertEquals(bookingAll, bookingsUserTest2);
+        assertEquals(bookingAll, bookingsUserTest2);
 
         List<Booking> bookingsUserEmpty = (List) bookingService.bookingsUser("FUTURE", 1, null, null);
 
-        Assert.assertEquals(bookingEmpty, bookingsUserEmpty);
+        assertEquals(bookingEmpty, bookingsUserEmpty);
 
-        Assert.assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsUser("XXX", 1, null, null));
+        assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsUser("XXX", 1, null, null));
     }
+
+
+    @Test
+    void bookingsUserValidation() {
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
+
+        try {
+            bookingService.bookingsUser("FUTURE", 1, -1L, -1L);
+        } catch (Exception e) {
+            assertEquals("не верно указан индекс первого элемента",
+                    e.getMessage());
+        }
+        try {
+            bookingService.bookingsUser("FUTURE", 1, 0L, 0L);
+        } catch (Exception e) {
+            assertEquals("не верно указано количество элементов при выводе",
+                    e.getMessage());
+        }
+    }
+
 
     @Test
     void bookingsOwner() {
@@ -183,8 +226,9 @@ class BookingServiceImplTest {
         List<Booking> bookingAll = List.of(bookingBefore, booking);
         List<Booking> bookingEmpty = List.of();
 
-        Mockito.doNothing()
-                .when(userService).searchUser(Mockito.anyLong());
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
 
         Mockito
                 .when(bookingRepository.fetchBookingByStateCurrentByOwnerId(user.getId()))
@@ -204,18 +248,39 @@ class BookingServiceImplTest {
 
         List<Booking> bookingsUserTest = (List) bookingService.bookingsOwner("REJECTED", 1, null, null);
 
-        Assert.assertEquals(bookingRejected, bookingsUserTest);
+        assertEquals(bookingRejected, bookingsUserTest);
 
         List<Booking> bookingsUserTest2 = (List) bookingService.bookingsOwner("ALL", 1, null, null);
 
-        Assert.assertEquals(bookingAll, bookingsUserTest2);
+        assertEquals(bookingAll, bookingsUserTest2);
 
         List<Booking> bookingsUserEmpty = (List) bookingService.bookingsOwner("FUTURE", 1, null, null);
 
-        Assert.assertEquals(bookingEmpty, bookingsUserEmpty);
+        assertEquals(bookingEmpty, bookingsUserEmpty);
 
-        Assert.assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsOwner("XXX", 1, null, null));
+        assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsOwner("XXX", 1, null, null));
 
+    }
+
+    @Test
+    void bookingsOwnerBookingValidation() {
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
+
+        //assertThrows(ValidationException.class, (ThrowingRunnable) bookingServiceIn.bookingsOwner("REJECTED", 1, -1L, -1L));
+        try {
+            bookingService.bookingsOwner("FUTURE", 1, -1L, -1L);
+        } catch (Exception e) {
+            assertEquals("не верно указан индекс первого элемента",
+                    e.getMessage());
+        }
+        try {
+            bookingService.bookingsOwner("FUTURE", 1, 0L, 0L);
+        } catch (Exception e) {
+            assertEquals("не верно указано количество элементов при выводе",
+                    e.getMessage());
+        }
     }
 
     @Test
@@ -242,9 +307,9 @@ class BookingServiceImplTest {
         assertEquals(BookingStatus.WAITING, bookingResult.getStatus());
         assertEquals(1L, bookingResult.getItem().getId());
 
-        Assert.assertEquals(BookingStatus.WAITING, bookingResult.getStatus());
-        Assert.assertSame(user, bookingResult.getBooker());
-        Assert.assertSame(item, bookingResult.getItem());
+        assertEquals(BookingStatus.WAITING, bookingResult.getStatus());
+        assertSame(user, bookingResult.getBooker());
+        assertSame(item, bookingResult.getItem());
     }
 
     @Test
@@ -271,11 +336,11 @@ class BookingServiceImplTest {
 
         bookingService.approvedOrRejected(true, 1L, 2L);
 
-        Assert.assertEquals(BookingStatus.APPROVED, booking.getStatus());
+        assertEquals(BookingStatus.APPROVED, booking.getStatus());
 
         bookingService.approvedOrRejected(false, 1L, 2L);
 
-        Assert.assertEquals(BookingStatus.REJECTED, booking.getStatus());
+        assertEquals(BookingStatus.REJECTED, booking.getStatus());
     }
 
     @Test
@@ -288,11 +353,14 @@ class BookingServiceImplTest {
                 .when(itemRepository.getById(Mockito.anyLong()))
                 .thenReturn(item);
 
-        Assert.assertThrows(NotFoundException.class, () -> bookingService.approvedOrRejected(state, 555L, 2L));
+        assertThrows(NotFoundException.class, () -> bookingService.approvedOrRejected(state, 555L, 2L));
     }
 
     @Test
     void getBookingId() {
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                        .thenReturn(Optional.of(user));
         Mockito
                 .when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(booking));
@@ -309,16 +377,19 @@ class BookingServiceImplTest {
 
     @Test
     void getBookingIdValidation() {
-        Booking booking1 = null;
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
+
         Mockito
                 .when(bookingRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.ofNullable(booking1));
+                .thenReturn(Optional.empty());
 
-        Assert.assertThrows(NotFoundException.class, () -> bookingService.getBookingId(777L, user.getId()));
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingId(777L, user.getId()));
         try {
             bookingService.getBookingId(777L, user.getId());
         } catch (Exception e) {
-            Assert.assertEquals("Бронирование не найдено",
+            assertEquals("Бронирование не найдено",
                     e.getMessage());
         }
     }
@@ -327,16 +398,43 @@ class BookingServiceImplTest {
     void getBookingIdBeadBooking() {
         Mockito
                 .when(userRepository.findById(Mockito.anyLong()))
-                .thenReturn(Optional.empty());
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(bookingRepository.findById(Mockito.anyLong()))
+                        .thenReturn(Optional.empty());
 
-        Assert.assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
+        assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
         try {
             bookingService.bookingId(55L, 55L);
         } catch (Exception e) {
-            Assert.assertEquals("Бронирование не найдено",
+            assertEquals("Бронирование не найдено",
                     e.getMessage());
         }
     }
+
+    @Test
+    void getBookingIdBeadRequestor() {
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(user));
+        Mockito
+                .when(bookingRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.of(booking));
+
+        User bedRequestor = new User();
+        bedRequestor.setId(10L);
+
+
+        assertThrows(NotFoundException.class, () -> bookingService.getBookingId(booking.getId(),
+                bedRequestor.getId()));
+        try {
+            bookingService.bookingId(55L, 55L);
+        } catch (Exception e) {
+            assertEquals("Запрос может сделать хозяин или арендатор вещи",
+                    e.getMessage());
+        }
+    }
+
 
     @Test
     void searchBooking() {
@@ -344,11 +442,11 @@ class BookingServiceImplTest {
                 .when(bookingRepository.findById(5L))
                 .thenReturn(Optional.empty());
 
-        Assert.assertThrows(NotFoundException.class, () -> bookingService.searchBooking(5L));
+        assertThrows(NotFoundException.class, () -> bookingService.searchBooking(5L));
         try {
             bookingService.searchBooking(5L);
         } catch (Exception e) {
-            Assert.assertEquals("Бронирование не найдено",
+            assertEquals("Бронирование не найдено",
                     e.getMessage());
         }
     }
@@ -363,11 +461,11 @@ class BookingServiceImplTest {
         bookingDateValidation.setStatus(BookingStatus.REJECTED);
         bookingDateValidation.setItemId(1);
 
-        Assert.assertThrows(ValidationException.class, () -> bookingService.dateValidation(bookingDateValidation));
+        assertThrows(ValidationException.class, () -> bookingService.dateValidation(bookingDateValidation));
         try {
             bookingService.dateValidation(bookingDateValidation);
         } catch (Exception e) {
-            Assert.assertEquals("Введены не верные даты бронирования",
+            assertEquals("Введены не верные даты бронирования",
                     e.getMessage());
         }
     }
