@@ -33,4 +33,36 @@ class BookingDtoOutTest {
     void getItemName() {
         assertEquals("testName", bookingDtoOut.getItemName());
     }
+
+
+    @Test
+    void getId() {
+        assertEquals(1L, bookingDtoOut.getId());
+
+    }
+
+    @Test
+    void getStart() {
+        assertEquals(LocalDateTime.of(2020, 06, 05, 10, 00, 00),
+                 bookingDtoOut.getStart());
+    }
+
+    @Test
+    void getEnd() {
+        assertEquals(LocalDateTime.of(2020, 07, 05, 10, 00, 00),
+                bookingDtoOut.getEnd());
+
+    }
+
+    @Test
+    void getItemId() {
+        assertEquals(1L, bookingDtoOut.getItemId());
+
+    }
+
+    @Test
+    void getBookerId() {
+        assertEquals(1L, bookingDtoOut.getBookerId());
+
+    }
 }
