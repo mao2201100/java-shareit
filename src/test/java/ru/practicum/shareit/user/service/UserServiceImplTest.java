@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -24,7 +23,6 @@ import javax.persistence.EntityManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,12 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 class UserServiceImplTest {
-    @Autowired
-    private UserService userService;
     @MockBean
     private UserRepository userRepository;
-    @SpyBean
-    UserMapper userMapper;
+    @Autowired
+    private UserService userService;
     @Autowired
     private UserValidation userValidation;
     @MockBean
@@ -93,19 +89,22 @@ class UserServiceImplTest {
 
     @Test
     void getUsers() {
-        var user = createTestUser();
-        var userDto = createTestUserDto();
-        List<User> listUser = List.of(user);
-        Collection<UserDto> userDdoCol = List.of(userDto);
+        User user = createTestUser();
+        user.setId(1L);
+        user.setName("Test");
+        user.setEmail("test@mail.ru");
+        List<User> userList = List.of(user);
+
         Mockito
                 .when(userRepository.findAll())
-                .thenReturn(listUser);
+                .thenReturn((userList));
 
-        List<User> listTest = userRepository.findAll();
-        Collection<UserDto> collectionDtoTest = listTest.stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-        Assert.assertArrayEquals(userDdoCol.toArray(), collectionDtoTest.toArray());
+        Collection<UserDto> userCollection = userService.getUsers();
+        List<UserDto> userDtoList = (List) userCollection;
+
+        assertEquals(1l, userDtoList.get(0).getId());
+        assertEquals("Test", userDtoList.get(0).getName());
+        assertEquals("test@mail.ru", userDtoList.get(0).getEmail());
     }
 
     @Test
@@ -113,6 +112,7 @@ class UserServiceImplTest {
 
         Mockito.doNothing()
                 .when(entityManager).persist(Mockito.any(User.class));
+
         userService.create(createTestUser());
         UserDto userDto = UserMapper.toUserDto(userTest);
         assertEquals(1L, userDto.getId());
