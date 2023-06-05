@@ -35,6 +35,7 @@ class CommentsMapperTest {
         user.setName("test");
         user.setEmail("mail@mail.ru");
     }
+
     @Test
     void toCommentsDtoAuthorBead() {
         Comments comments = new Comments();
