@@ -102,7 +102,7 @@ class UserServiceImplTest {
         Collection<UserDto> userCollection = userService.getUsers();
         List<UserDto> userDtoList = (List) userCollection;
 
-        assertEquals(1l, userDtoList.get(0).getId());
+        assertEquals(1L, userDtoList.get(0).getId());
         assertEquals("Test", userDtoList.get(0).getName());
         assertEquals("test@mail.ru", userDtoList.get(0).getEmail());
     }
