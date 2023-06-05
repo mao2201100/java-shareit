@@ -114,13 +114,13 @@ class BookingServiceImplTest {
     void bookingId() {
         Mockito
                 .when(userRepository.findById(Mockito.anyLong()))
-                        .thenReturn(Optional.of(user));
+                .thenReturn(Optional.of(user));
         Mockito
                 .when(bookingRepository.findById(booking.getId()))
                 .thenReturn(Optional.ofNullable(booking));
 
         Mockito
-                .when(bookingRepository.findById(Mockito.argThat(arg -> arg > 2L)))
+                .when(bookingRepository.findById(3L))
                 .thenThrow(new UnsupportedStatus());
 
 
@@ -129,6 +129,7 @@ class BookingServiceImplTest {
         assertEquals(2L, result.getId());
         assertEquals(startTime, result.getStart());
         assertEquals(endTime, result.getEnd());
+
         assertThrows(UnsupportedStatus.class, () -> bookingService.bookingId(3, user.getId()));
         try {
             bookingService.bookingId(3, user.getId());
@@ -165,7 +166,7 @@ class BookingServiceImplTest {
 
         Mockito
                 .when(userRepository.findById(Mockito.anyLong()))
-                        .thenReturn(Optional.of(user));
+                .thenReturn(Optional.of(user));
 
         Mockito
                 .when(bookingRepository.fetchBookingByStateCurrentByBookerId(user.getId()))
@@ -196,6 +197,9 @@ class BookingServiceImplTest {
         assertEquals(bookingEmpty, bookingsUserEmpty);
 
         assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsUser("XXX", 1, null, null));
+
+        List<Booking> bookingsFromSize = (List) bookingService.bookingsUser("REJECTED", 1, 2L, 2L);
+        assertEquals(0, bookingsFromSize.size());
     }
 
 
@@ -260,6 +264,8 @@ class BookingServiceImplTest {
 
         assertThrows(UnsupportedStatus.class, () -> bookingService.bookingsOwner("XXX", 1, null, null));
 
+        List<Booking> bookingsFromSize = (List) bookingService.bookingsOwner("REJECTED", 1, 2L, 2L);
+        assertEquals(0, bookingsFromSize.size());
     }
 
     @Test
@@ -360,7 +366,7 @@ class BookingServiceImplTest {
     void getBookingId() {
         Mockito
                 .when(userRepository.findById(Mockito.anyLong()))
-                        .thenReturn(Optional.of(user));
+                .thenReturn(Optional.of(user));
         Mockito
                 .when(bookingRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(booking));
@@ -401,7 +407,7 @@ class BookingServiceImplTest {
                 .thenReturn(Optional.of(user));
         Mockito
                 .when(bookingRepository.findById(Mockito.anyLong()))
-                        .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
         try {
