@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(SpringRunner.class)
@@ -121,7 +123,21 @@ class BookingServiceImplTest {
         Assert.assertEquals(startTime, result.getStart());
         Assert.assertEquals(endTime, result.getEnd());
         Assert.assertThrows(UnsupportedStatus.class, () -> bookingService.bookingId(3, user.getId()));
+    }
 
+    @Test
+    void bookingIdBeadBooking() {
+        Mockito
+                .when(userRepository.findById(Mockito.anyLong()))
+                .thenReturn(Optional.empty());
+
+        Assert.assertThrows(NotFoundException.class, () -> bookingService.bookingId(55L, 55L));
+        try {
+            bookingService.bookingId(55L, 55L);
+        } catch (Exception e) {
+            Assert.assertEquals("Бронирование не найдено",
+                    e.getMessage());
+        }
     }
 
     @Test
@@ -207,44 +223,53 @@ class BookingServiceImplTest {
 
     @Test
     void create() {
-        Mockito.doNothing()
-                .when(userService).searchUser(Mockito.anyLong());
-        Mockito.doNothing()
-                .when(itemServiceImpl).checkItem(Mockito.anyLong());
-        Mockito.doNothing()
-                .when(itemServiceImpl).checkItemAvailable(Mockito.anyLong());
-        Mockito.doNothing()
-                .when(itemServiceImpl).checkItemOwner(Mockito.anyLong(), Mockito.anyLong());
         Mockito
-                .when(userRepository.findById(user.getId()))
+                .when(userRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(user));
         Mockito
-                .when(itemRepository.findById(bookingDto.getItemId()))
+                .when(itemRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.of(item));
         Mockito
-                .when(bookingRepository.saveAndFlush(booking))
+                .when(bookingRepository.saveAndFlush(Mockito.any(Booking.class)))
                 .thenReturn(booking);
 
         Booking bookingResult = bookingService.create(bookingDto, user.getId());
 
         Mockito
-                .verify(bookingRepository, Mockito.times(1)).saveAndFlush(Mockito.any(Booking.class));
+                .verify(bookingRepository, Mockito.times(1))
+                .saveAndFlush(Mockito.any(Booking.class));
 
-        Assert.assertEquals(BookingStatus.WAITING,
-                bookingResult.getStatus());
+        assertEquals(2L, bookingResult.getId());
+        assertEquals(startTime, bookingResult.getStart());
+        assertEquals(endTime, bookingResult.getEnd());
+        assertEquals(BookingStatus.WAITING, bookingResult.getStatus());
+        assertEquals(1L, bookingResult.getItem().getId());
+
+        Assert.assertEquals(BookingStatus.WAITING, bookingResult.getStatus());
         Assert.assertSame(user, bookingResult.getBooker());
         Assert.assertSame(item, bookingResult.getItem());
+    }
 
+    @Test
+    void saveBooking() {
+        Mockito
+                .when(bookingService.saveBooking(Mockito.any(Booking.class)))
+                .thenReturn(booking);
+
+        bookingService.saveBooking(booking);
+
+        Mockito
+                .verify(bookingRepository, Mockito.times(1))
+                .saveAndFlush(Mockito.any(Booking.class));
     }
 
     @Test
     void approvedOrRejected() {
         Mockito
-                .when(bookingRepository.getById(2L))
+                .when(bookingRepository.getById(Mockito.anyLong()))
                 .thenReturn(booking);
-        Long itemId = booking.getItem().getId();
         Mockito
-                .when(itemRepository.getById(itemId))
+                .when(itemRepository.getById(Mockito.anyLong()))
                 .thenReturn(item);
 
         bookingService.approvedOrRejected(true, 1L, 2L);
@@ -260,11 +285,10 @@ class BookingServiceImplTest {
     void approvedOrRejectedValidation() {
         boolean state = true;
         Mockito
-                .when(bookingRepository.getById(2L))
+                .when(bookingRepository.getById(Mockito.anyLong()))
                 .thenReturn(booking);
-        Long itemId = booking.getItem().getId();
         Mockito
-                .when(itemRepository.getById(itemId))
+                .when(itemRepository.getById(Mockito.anyLong()))
                 .thenReturn(item);
 
         Assert.assertThrows(NotFoundException.class, () -> bookingService.approvedOrRejected(state, 555L, 2L));
@@ -321,7 +345,7 @@ class BookingServiceImplTest {
 
     @Test
     void save() {
-        bookingService.save(booking);
+        bookingService.saveBooking(booking);
         Mockito
                 .verify(bookingRepository, Mockito.times(1)).saveAndFlush(Mockito.any(Booking.class));
     }

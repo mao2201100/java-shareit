@@ -120,12 +120,12 @@ public class BookingServiceImpl implements BookingService {
         booking.setBooker(userRepository.findById(bookerId).orElseThrow());
         booking.setStatus(BookingStatus.WAITING);
         booking.setItem(itemRepository.findById(dto.getItemId()).orElseThrow());
-        save(booking);
+        saveBooking(booking);
         return booking;
     }
 
     @Transactional
-    public Booking save(Booking booking) {
+    public Booking saveBooking(Booking booking) {
         return bookingRepository.saveAndFlush(booking);
     }
 
@@ -145,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.setStatus(BookingStatus.REJECTED);
             }
 
-            return save(booking);
+            return saveBooking(booking);
         } else {
             bookingValidation.approvederСheck();
         }
