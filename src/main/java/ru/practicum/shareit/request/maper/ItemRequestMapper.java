@@ -10,9 +10,9 @@ import java.util.List;
 @Component
 public class ItemRequestMapper {
 
-    List<Item> i = List.of();
 
     public ItemRequestDto toItemRequestDto(Request request) {
+        List<Item> i = List.of();
         List<Item> items = request.getItems();
         return new ItemRequestDto(
                 request.getId(),

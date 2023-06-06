@@ -104,8 +104,7 @@ public class BookingServiceImpl implements BookingService {
         }
         bookingValidation.bookingIdIsFirstAndSizeIndex(from, size);
         Pageable pageable = PageRequest.of(Math.toIntExact(from), Math.toIntExact(size));
-        List<Booking> bookingList = bookingRepository.fetchBookingOwnerIdPage(ownerId, pageable);
-        return bookingList;
+        return bookingRepository.fetchBookingOwnerIdPage(ownerId, pageable);
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.request.Request;
 import ru.practicum.shareit.request.RequestRepository;
@@ -31,6 +32,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRepository itemRepository;
 
     @Override
+    @Transactional
     public ItemRequestDto create(Request request, long userId) {
         itemRequestValidation.itemRequest(request);
         userService.searchUser(userId);
