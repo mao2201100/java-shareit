@@ -10,8 +10,8 @@ import ru.practicum.shareit.exception.ValidationException;
 public class BookingValidation {
 
     public void bookingNotFound() {
-        log.warn("Валидация не пройдена: Брорирование не найдено");
-        throw new NotFoundException("Брорирование не найдено");
+        log.warn("Валидация не пройдена: Бронирование не найдено");
+        throw new NotFoundException("Бронирование не найдено");
     }
 
     public void approvederСheck() {
@@ -27,5 +27,16 @@ public class BookingValidation {
     public void checkGetBookingId() {
         log.warn("Валидация не пройдена: Запрос может сделать хозяин или арендатор вещи");
         throw new NotFoundException("Запрос может сделать хозяин или арендатор вещи");
+    }
+
+    public void bookingIdIsFirstAndSizeIndex(Long from, Long size) {
+        if (from < 0 && size < 0) {
+            log.warn("Валидация не пройдена: не верно указан индекс первого элемента");
+            throw new ValidationException("не верно указан индекс первого элемента");
+        }
+        if (from == 0 && size == 0) {
+            log.warn("Валидация не пройдена: не верно указано количество элементов при выводе");
+            throw new ValidationException("не верно указано количество элементов при выводе");
+        }
     }
 }

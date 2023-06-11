@@ -68,7 +68,8 @@ public class ItemServiceImpl implements ItemService {
         validation.item(item);
         userService.searchUser(ownerId);
         item.setOwnerId(ownerId);
-        itemRepository.save(item);
+        item.setOwner(userService.findUserById(ownerId).getName());
+        itemRepository.saveAndFlush(item);
         log.info("Пользователь id: " + ownerId + " добавил вещь: " + item.getName());
         return mapper.toItemDto(itemRepository.getById(item.getId()), ownerId);
     }
@@ -139,5 +140,4 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("");
         }
     }
-
 }

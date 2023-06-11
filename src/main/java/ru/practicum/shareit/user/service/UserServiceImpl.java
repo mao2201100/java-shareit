@@ -33,7 +33,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<UserDto> getUsers() { // получить список всех пользователей  +++
-        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return userRepository.findAll()
+                .stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
