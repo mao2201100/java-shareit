@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserRequestDto;
 
-import java.util.Collection;
-
 /**
  * TODO Sprint add-controllers.
  */
@@ -17,7 +15,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserController {
 
-    private  final UserClient userClient;
+    private final UserClient userClient;
 
     @GetMapping("/{userId}")
     public ResponseEntity<Object> findById(
@@ -40,15 +38,15 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<Object> update(
-                                         @RequestBody UserRequestDto userRequestDto,
-                                         @PathVariable("userId") Long userId) { // изменить пользователя
+            @RequestBody UserRequestDto userRequestDto,
+            @PathVariable("userId") Long userId) { // изменить пользователя
         log.info("Executing Patch update user id: " + userId);
         return userClient.update(userId, userRequestDto);
     }
 
     @DeleteMapping("/{userId}") // удаление польльзователя
     public void deleteFriends(
-                              @PathVariable Long userId) {
+            @PathVariable Long userId) {
         userClient.deleteUser(userId);
         log.info("Executing Delete  user id: " + userId);
     }

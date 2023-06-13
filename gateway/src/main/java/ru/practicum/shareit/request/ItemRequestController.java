@@ -40,7 +40,7 @@ public class ItemRequestController {
     @GetMapping("/all") // получить список запросов, созданных другими пользователями.
     public ResponseEntity<Object> findAllItemRequestUsers(@PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Long from,
                                                           @Positive @RequestParam(name = "size", defaultValue = "10") Long size,
-                                                              @RequestHeader("X-Sharer-User-Id") long userId) {
+                                                          @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Executing Get findAllItemRequestUsers");
         return requestClient.findAllItemRequestUsers(from, size, userId);
     }

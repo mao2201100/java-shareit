@@ -13,7 +13,7 @@ import ru.practicum.shareit.request.dto.Request;
 import java.util.Map;
 
 @Service
-public class RequestClient extends BaseClient{
+public class RequestClient extends BaseClient {
     private static final String API_PREFIX = "/requests";
 
     @Autowired
@@ -27,7 +27,7 @@ public class RequestClient extends BaseClient{
     }
 
 
-    public ResponseEntity<Object> create(long userId, Request request ) {
+    public ResponseEntity<Object> create(long userId, Request request) {
         return post("", userId, request);
     }
 
