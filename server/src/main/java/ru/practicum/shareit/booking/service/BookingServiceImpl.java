@@ -58,8 +58,8 @@ public class BookingServiceImpl implements BookingService {
     public Collection<Booking> bookingsUser(String state, long bookerId, Long from, Long size) { //Получение списка всех бронирований
         // текущего пользователя
         userService.searchUser(bookerId);
-        if ((from == null && size == null ) || (size == 10 && from == 0)) {
-          //  userService.searchUser(bookerId);
+        if ((from == null && size == null) || (size == 10 && from == 0)) {
+            //  userService.searchUser(bookerId);
             switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
                 case ("CURRENT"): //Текущие бронирования пользователя
                     return bookingRepository.fetchBookingByStateCurrentByBookerId(bookerId);
@@ -78,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         bookingValidation.bookingIdIsFirstAndSizeIndex(from, size);
-        Pageable pageable = PageRequest.of(Math.toIntExact(from-2), Math.toIntExact(size));
+        Pageable pageable = PageRequest.of(Math.toIntExact(from - 2), Math.toIntExact(size));
         List<Booking> bookingList = bookingRepository.fetchBookingByBookerIdPage(bookerId, pageable);
         return bookingList;
     }
@@ -87,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
     public Collection<Booking> bookingsOwner(String state, long ownerId, Long from, Long size) { //Получение списка бронирований для всех
         // вещей текущего пользователя. Этот запрос имеет смысл для владельца хотя бы одной вещи
         userService.searchUser(ownerId);
-        if ((from == null && size == null ) || (size == 10 && from == 0)) {
+        if ((from == null && size == null) || (size == 10 && from == 0)) {
             switch (state) { // Бронирования должны возвращаться отсортированными по дате от более новых к более старым.
                 case ("CURRENT"): //Текущие бронирования пользователя
                     return bookingRepository.fetchBookingByStateCurrentByOwnerId(ownerId);
