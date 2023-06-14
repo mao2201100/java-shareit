@@ -6,9 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.comments.Comments;
 import ru.practicum.shareit.item.dto.Item;
-/**
- * TODO Sprint add-controllers.
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -32,7 +30,7 @@ public class ItemController {
 
     @GetMapping("search")
     public ResponseEntity<Object> itemSearch(@RequestParam String text,
-                                          @RequestHeader("X-Sharer-User-Id") long ownerId) {  //получение списка всех вещей по параметру поиска.
+                                             @RequestHeader("X-Sharer-User-Id") long ownerId) {  //получение списка всех вещей по параметру поиска.
         log.info("Executing Get itemSearch: " + text);
         return itemClient.itemSearch(text, ownerId);
     }
@@ -45,7 +43,7 @@ public class ItemController {
 
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> createComments(@PathVariable("itemId") Long itemId, @RequestBody Comments comments,
-                                     @RequestHeader("X-Sharer-User-Id") long idUser) {
+                                                 @RequestHeader("X-Sharer-User-Id") long idUser) {
         // добавить комментарий
         log.info("Executing Comment createItemRequest");
 
