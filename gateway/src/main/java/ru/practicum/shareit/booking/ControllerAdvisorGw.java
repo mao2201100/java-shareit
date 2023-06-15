@@ -20,6 +20,7 @@ public class ControllerAdvisorGw extends ResponseEntityExceptionHandler {
         Map<String, String> body = new LinkedHashMap<>();
         body.put("timestamp", "Что-то пошло не так");
         body.put("error", ex.getMessage());
+        log.debug("HttpStatus.INTERNAL_SERVER_ERROR");
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
